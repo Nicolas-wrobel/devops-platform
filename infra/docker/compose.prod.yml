@@ -1,0 +1,18 @@
+services:
+  db:
+    ports:
+      - "${POSTGRES_PORT}:5432"
+
+  backend:
+    build:
+      context: ../../apps/backend
+      dockerfile: Dockerfile
+    ports:
+      - "${SPRING_BOOT_PORT}:8080"
+
+  frontend:
+    build:
+      context: ../../apps/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "${REACT_PORT}:80"

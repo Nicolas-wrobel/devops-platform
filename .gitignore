@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build
+dist/
+build/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env.dev
+.env.prod
+
+# Node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Java/Spring Boot
+target/
+*.jar
+*.war
+*.class
+.classpath
+.project
+.settings/
+*.iml
+
+# Maven
+.m2/
+
+# Gradle
+.gradle/
+build/
+
+# Docker
+.dockerignore
+
+# Kubernetes
+k8s/*.local.yaml
+
+# Database
+*.sql
+postgres_data/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+logs/
+*.log
