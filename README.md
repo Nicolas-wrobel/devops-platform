@@ -30,42 +30,83 @@ devops-platform/
 ## Prerequisites
 
 - **Git**
-- **Java 21**
-- **Node.js (LTS recommended)**
-- **Docker Engine + Docker Compose v2**
-- (Optional) **Make**
+- **Docker Engine**
+- **Docker Compose v2**
+- (Optional but recommended) **Make**
 
-> This project targets **Linux (Ubuntu 24.04)** as the primary dev environment, but it should remain cross-platform where possible.
+> The project is containerized and designed to run through Docker.  
+> Make targets are provided as a convenience layer on top of Docker Compose.
 
 ---
 
 ## Getting started (local development)
 
-### 1) Clone
+### 1) Clone the repository
+
 ```bash
 git clone <REPO_URL>
 cd devops-platform
 ```
 
-### 2) Start the database (PostgreSQL)
+### 2) Environment configuration
+
+Environment variables are managed through Docker Compose:
+
+- `infra/docker/.env.dev` → development
+- `infra/docker/.env.prod` → production
+
+Make sure the appropriate `.env.*` file exists and is correctly configured before starting the stack.
+
+### 3) Start the development stack
+
+The development environment uses:
+
+- `compose.yml`
+- `compose.dev.yml`
+- `.env.dev`
+
+To build and start all services in detached mode:
 
 ```bash
-docker compose -f infra/docker/docker-compose.dev.yml up -d
+make dev
 ```
 
-### 3) Start backend (API)
+Equivalent command (without Make):
 
 ```bash
-cd apps/backend
-./mvnw spring-boot:run
+./scripts/dc-dev.sh up --build -d
 ```
 
-### 4) Start frontend (web app)
+### 4) Useful development commands
+
+Stop the stack:
 
 ```bash
-cd apps/frontend
-npm install
-npm run dev
+make dev-down
+```
+
+View logs:
+
+```bash
+make dev-logs
+```
+
+List running containers:
+
+```bash
+make dev-ps
+```
+
+Rebuild containers (no cache):
+
+```bash
+make dev-build
+```
+
+Restart the stack:
+
+```bash
+make dev-restart
 ```
 
 ---
@@ -77,6 +118,42 @@ npm run dev
 - **Backend:** `http://localhost:8080`
 
 - **Database:** `localhost:5432` (PostgreSQL)
+
+---
+
+## Production mode (locally)
+
+The production stack uses:
+
+- `compose.yml`
+- `compose.prod.yml`
+- `.env.prod`
+
+Start production mode locally:
+
+```bash
+make prod
+```
+
+Other available commands:
+
+```bash
+make prod-down
+make prod-logs
+make prod-ps
+make prod-build
+make prod-restart
+```
+
+---
+
+## Notes
+
+- All Docker Compose commands are wrapped through:
+  - `scripts/dc-dev.sh` (development)
+  - `scripts/dc-prod.sh` (production)
+- These scripts automatically resolve the project root, select the correct Compose files, and load the appropriate environment file.
+- No manual docker compose -f ... commands are required when using make.
 
 ---
 
