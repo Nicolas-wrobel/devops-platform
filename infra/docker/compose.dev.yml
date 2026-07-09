@@ -21,6 +21,8 @@ services:
       dockerfile: Dockerfile.dev
     working_dir: /app
     command: npm run dev -- --host 0.0.0.0 --port 5173
+    environment:
+      VITE_BACKEND_URL: http://backend:8080
     ports:
       - "${REACT_PORT}:5173"
     volumes:
