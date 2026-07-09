@@ -42,8 +42,6 @@ target/
 .gradle/
 build/
 
-# Docker
-.dockerignore
 
 # Kubernetes
 k8s/*.local.yaml
