@@ -72,6 +72,28 @@ npm run dev / build / lint / preview
 - **Domain modules**: a business module = entity + repository + service + controller + DTO + validation + Flyway migration. Not built yet, but this is the shape to use starting with the first one — keep later modules consistent with it. Note: adopting Flyway means moving off `ddl-auto=update` (→ `validate`) and adding versioned scripts under `src/main/resources/db/migration`.
 - **Language**: all code, comments, commit messages, and documentation in this repo are written in English.
 
+## Git workflow
+
+Trunk-based (GitHub Flow), even solo — the discipline matters for the
+upcoming CI and for good habits, not just team size.
+
+- `main` is always stable and deployable. Never commit directly to it.
+- Before any new feature/fix/chore: branch from an up-to-date `main`.
+  Naming mirrors existing commit prefixes: `feature/<slug>`, `fix/<slug>`,
+  `chore/<slug>`, `docs/<slug>`.
+- Work on the branch with the usual atomic, descriptive commits (see
+  Commits above).
+- Integrate back via a pull request into `main`, even solo — not a direct
+  local merge. Squash-merge by default to keep `main` linear; use a
+  regular merge only when the branch's individual commits are worth
+  preserving.
+- Delete the branch after merge.
+- `git push` still always requires explicit confirmation first (see
+  Security and permissions).
+- Once CI exists (next roadmap item): add GitHub branch protection on
+  `main` (PR required + CI checks required before merge). Not enabled yet
+  — nothing to check.
+
 ## Security and permissions
 
 - Never read or display the contents of `.env.dev`, `.env.prod`, or any file containing secrets.
