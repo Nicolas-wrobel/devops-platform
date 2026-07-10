@@ -48,6 +48,7 @@ k8s/*.local.yaml
 
 # Database
 *.sql
+!**/src/main/resources/db/migration/*.sql
 postgres_data/
 
 # OS
