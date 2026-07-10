@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-**What:** Early-stage bootstrap monorepo (portfolio project). Backend/frontend are generated skeletons (no business logic yet). `docs/`, `infra/k8s/`, `infra/helm/` are empty placeholders. No CI yet (`.github/` empty).
+**What:** Early-stage bootstrap monorepo (portfolio project). Backend/frontend are generated skeletons (no business logic yet). `infra/k8s/`, `infra/helm/` are empty placeholders. `docs/` holds [PROJECT_GUIDE.md](docs/PROJECT_GUIDE.md) (goals/roadmap), [ARCHITECTURE.md](docs/ARCHITECTURE.md) (current stack/layout), [DEVELOPMENT.md](docs/DEVELOPMENT.md) (commands/verification), and `DECISIONS/` (ADRs). No CI yet (`.github/` empty).
 
 **Why:** Repo is grown step by step with production-like practices. Roadmap: API contract + frontend/backend integration → first domain module (environment/service/deployment CRUD) → CI → containerization → observability → Kubernetes.
 
@@ -71,6 +71,9 @@ npm run dev / build / lint / preview
 - **Secrets**: never commit `.env.dev`, `.env.prod`, or any secret — only `.env.example` (dummy values, kept in sync with required keys).
 - **Domain modules**: a business module = entity + repository + service + controller + DTO + validation + Flyway migration. Not built yet, but this is the shape to use starting with the first one — keep later modules consistent with it. Note: adopting Flyway means moving off `ddl-auto=update` (→ `validate`) and adding versioned scripts under `src/main/resources/db/migration`.
 - **Language**: all code, comments, commit messages, and documentation in this repo are written in English.
+
+## Documentation of Decisions 
+Any fundamental technical decision (choice of library, architectural pattern, significant trade-off) must be documented in docs/DECISIONS/ following the format specified in docs/DECISIONS/0000-template.md. Numbered format: 000X-short-title.md
 
 ## Git workflow
 
