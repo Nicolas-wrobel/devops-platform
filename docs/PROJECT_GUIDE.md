@@ -61,10 +61,10 @@ The infrastructure supports this application.
 
 # Long-term roadmap
 
-1.  Technical foundation
-2.  First business module
-3.  Database migrations
-4.  CI
+1.  Technical foundation (done)
+2.  First business module (done — `Environment` CRUD, see [ADRs 0005-0009](DECISIONS/))
+3.  Database migrations (done — Flyway, adopted as part of step 2, see [ADR-0006](DECISIONS/0006-adopt-flyway-with-first-module.md))
+4.  CI (next)
 5.  Container improvements
 6.  Monitoring
 7.  Kubernetes
