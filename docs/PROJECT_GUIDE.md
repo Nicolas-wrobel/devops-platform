@@ -65,7 +65,7 @@ The infrastructure supports this application.
 2.  First business module (done — `Environment` CRUD, see [ADRs 0005-0009](DECISIONS/))
 3.  Database migrations (done — Flyway, adopted as part of step 2, see [ADR-0006](DECISIONS/0006-adopt-flyway-with-first-module.md))
 4.  CI (done — GitHub Actions, see [ADR-0011](DECISIONS/0011-ci-with-github-actions.md))
-5.  Container improvements
+5.  Container improvements (done — non-root prod backend, alpine JRE runtime, pinned base image versions, frontend healthcheck, see [ADR-0012](DECISIONS/0012-container-hardening.md))
 6.  Monitoring
 7.  Kubernetes
 8.  Helm
