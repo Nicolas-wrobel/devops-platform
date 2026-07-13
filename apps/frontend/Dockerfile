@@ -1,7 +1,7 @@
 # apps/frontend/Dockerfile
 
 # 1) Build
-FROM node:20 AS build
+FROM node:20.20.2 AS build
 WORKDIR /app
 
 COPY package*.json ./
