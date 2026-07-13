@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-**What:** Portfolio-project monorepo, grown step by step. Backend has its first business module (`Environment` CRUD, package-by-feature under `environment/`, cross-cutting concerns under `common/`) with Flyway-managed schema migrations. Frontend is still a generated skeleton beyond the backend health check display. `infra/k8s/`, `infra/helm/` are empty placeholders. `docs/` holds [PROJECT_GUIDE.md](docs/PROJECT_GUIDE.md) (goals/roadmap), [ARCHITECTURE.md](docs/ARCHITECTURE.md) (current stack/layout), [DEVELOPMENT.md](docs/DEVELOPMENT.md) (commands/verification), and `DECISIONS/` (ADRs, currently 0001-0010). No CI yet (`.github/` empty).
+**What:** Portfolio-project monorepo, grown step by step. Backend has its first business module (`Environment` CRUD, package-by-feature under `environment/`, cross-cutting concerns under `common/`) with Flyway-managed schema migrations. Frontend is still a generated skeleton beyond the backend health check display. `infra/k8s/`, `infra/helm/` are empty placeholders. `docs/` holds [PROJECT_GUIDE.md](docs/PROJECT_GUIDE.md) (goals/roadmap), [ARCHITECTURE.md](docs/ARCHITECTURE.md) (current stack/layout), [DEVELOPMENT.md](docs/DEVELOPMENT.md) (commands/verification), and `DECISIONS/` (ADRs, currently 0001-0011). CI is in place via GitHub Actions (`.github/workflows/ci.yml`, see ADR-0011) — backend tests + frontend lint/build on every push/PR to `main`; branch protection not enabled yet.
 
-**Why:** Repo is grown step by step with production-like practices. Roadmap: API contract + frontend/backend integration (done) → first domain module (done — `Environment` CRUD, ADRs 0005-0010) → CI (next) → containerization → observability → Kubernetes.
+**Why:** Repo is grown step by step with production-like practices. Roadmap: API contract + frontend/backend integration (done) → first domain module (done — `Environment` CRUD, ADRs 0005-0010) → CI (done — GitHub Actions, ADR-0011) → containerization → observability → Kubernetes.
 
 **How:** `Environment` (see [`apps/backend/src/main/java/com/devops_platform/backend/environment/`](apps/backend/src/main/java/com/devops_platform/backend/environment/)) is the reference implementation of the module shape below — follow it, don't reinvent it, when adding the next domain module (`Application`, `Deployment`, ...).
 
@@ -77,8 +77,8 @@ Any fundamental technical decision (choice of library, architectural pattern, si
 
 ## Git workflow
 
-Trunk-based (GitHub Flow), even solo — the discipline matters for the
-upcoming CI and for good habits, not just team size.
+Trunk-based (GitHub Flow), even solo — the discipline matters for CI
+and for good habits, not just team size.
 
 - `main` is always stable and deployable. Never commit directly to it.
 - Before any new feature/fix/chore: branch from an up-to-date `main`.
@@ -93,9 +93,10 @@ upcoming CI and for good habits, not just team size.
 - Delete the branch after merge.
 - `git push` still always requires explicit confirmation first (see
   Security and permissions).
-- Once CI exists (next roadmap item): add GitHub branch protection on
-  `main` (PR required + CI checks required before merge). Not enabled yet
-  — nothing to check.
+- CI exists now (GitHub Actions, ADR-0011) — the immediate next step is
+  adding GitHub branch protection on `main` (PR required + CI checks
+  required before merge). Not enabled yet, do this once the `ci.yml`
+  workflow has run green at least once on a real PR.
 
 ## Security and permissions
 

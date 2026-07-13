@@ -71,7 +71,7 @@ npm run dev / build / lint / preview
     with `curl` against the running stack, Flyway migration applied
     automatically)
 
-Next up on the roadmap: CI (see [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
+Next up on the roadmap: container improvements (see [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
 
 ------------------------------------------------------------------------
 
@@ -85,3 +85,8 @@ with:
 3. Frontend: `npm run lint` / `npm run build`.
 4. Confirm `curl http://localhost:8080/actuator/health` returns `200` with
    `"status":"UP"`.
+
+Steps 2 and 3 also run automatically on every push/PR to `main` via
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml) (see
+[ADR-0011](DECISIONS/0011-ci-with-github-actions.md)) — step 1 and 4 stay
+manual for now.

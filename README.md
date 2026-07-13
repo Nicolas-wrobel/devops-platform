@@ -1,5 +1,7 @@
 # DevOps Platform (Monorepo)
 
+[![CI](https://github.com/Nicolas-wrobel/devops-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Nicolas-wrobel/devops-platform/actions/workflows/ci.yml)
+
 A portfolio-grade full-stack + DevOps playground built with:
 - **Backend:** Spring Boot (Java 21, Maven)
 - **Frontend:** React + TypeScript (Vite)

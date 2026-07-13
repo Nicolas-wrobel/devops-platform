@@ -64,7 +64,7 @@ The infrastructure supports this application.
 1.  Technical foundation (done)
 2.  First business module (done — `Environment` CRUD, see [ADRs 0005-0009](DECISIONS/))
 3.  Database migrations (done — Flyway, adopted as part of step 2, see [ADR-0006](DECISIONS/0006-adopt-flyway-with-first-module.md))
-4.  CI (next)
+4.  CI (done — GitHub Actions, see [ADR-0011](DECISIONS/0011-ci-with-github-actions.md))
 5.  Container improvements
 6.  Monitoring
 7.  Kubernetes
