@@ -39,8 +39,20 @@ gitignored — never commit them.
 ./mvnw test -Dtest=BackendApplicationTests   # single test class
 ./mvnw package
 ```
-Needs `SPRING_DATASOURCE_URL/_USERNAME/_PASSWORD` and a reachable Postgres
-(defaults target `localhost:5432`).
+`./mvnw spring-boot:run` needs `SPRING_DATASOURCE_URL/_USERNAME/_PASSWORD` and a
+reachable Postgres (defaults target `localhost:5432`). `./mvnw test` does **not**
+need any of that — every test that touches a database spins up its own disposable
+`postgres:16` container via Testcontainers (see
+[ADR-0009](DECISIONS/0009-testcontainers-for-persistence-tests.md) and
+[ADR-0010](DECISIONS/0010-shared-testcontainers-base-for-integration-tests.md)),
+so `./mvnw test` only needs a local Docker daemon, not a running dev stack.
+
+Schema changes go through Flyway, not `ddl-auto` (see
+[ADR-0006](DECISIONS/0006-adopt-flyway-with-first-module.md)): add a new
+`V{n}__description.sql` file under
+`apps/backend/src/main/resources/db/migration/`, never edit an already-applied
+one. Migrations run automatically on backend startup, in Docker or via
+`./mvnw spring-boot:run`.
 
 **Frontend** (from `apps/frontend/`, outside Docker):
 ```bash
@@ -49,21 +61,17 @@ npm run dev / build / lint / preview
 
 ------------------------------------------------------------------------
 
-## Remaining technical foundation
+## Known follow-ups
 
-Before starting the first business module:
-
--   [x] Frontend ↔ backend communication (Vite dev-server proxy + nginx in prod, `/api` → backend)
--   [x] Health endpoint (Spring Boot Actuator, see [ADR-0004](DECISIONS/0004-actuator-vs-custom-health.md))
--   [x] Backend Docker healthcheck
 -   [ ] Proper CORS configuration — currently side-stepped via the `/api`
     proxy (same-origin from the browser's point of view); revisit if a
     direct cross-origin call ever becomes necessary
--   [ ] Verify Docker startup end-to-end (see Verification below)
--   [x] Verify documentation (this reorganization)
+-   [x] Verify Docker startup end-to-end — done as part of the `Environment`
+    module work (`make dev` + `make dev-ps` all healthy, full CRUD exercised
+    with `curl` against the running stack, Flyway migration applied
+    automatically)
 
-When the unchecked items are done, the technical foundation is ready for the
-first business module.
+Next up on the roadmap: CI (see [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
 
 ------------------------------------------------------------------------
 

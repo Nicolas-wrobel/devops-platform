@@ -14,14 +14,27 @@ Current, factual state of the stack — what exists today, not the roadmap
 | Frontend       | React 19, TypeScript, Vite                                |
 | Database       | PostgreSQL 16                                             |
 | Infrastructure | Docker, Docker Compose, Git, Makefile, Bash scripts        |
-| Later          | GitHub Actions, Flyway, Monitoring, Kubernetes, Helm       |
+| Migrations     | Flyway (see [ADR-0006](DECISIONS/0006-adopt-flyway-with-first-module.md)) |
+| Later          | GitHub Actions, Monitoring, Kubernetes, Helm               |
 
 Backend dependencies currently wired: `spring-boot-starter-webmvc`,
 `spring-boot-starter-data-jpa`, `spring-boot-starter-validation`,
 `spring-boot-starter-actuator` (see
-[ADR-0004](DECISIONS/0004-actuator-vs-custom-health.md)), the PostgreSQL
-driver, and `spring-boot-devtools` for local development. No controllers or
-entities yet — see the roadmap in PROJECT_GUIDE.md.
+[ADR-0004](DECISIONS/0004-actuator-vs-custom-health.md)), `spring-boot-starter-flyway`
++ `flyway-database-postgresql` (see
+[ADR-0006](DECISIONS/0006-adopt-flyway-with-first-module.md)), MapStruct (see
+[ADR-0007](DECISIONS/0007-mapstruct-for-entity-dto-mapping.md)), the PostgreSQL
+driver, and `spring-boot-devtools` for local development.
+
+The first business module, `Environment` (full CRUD under `/api/environments`),
+is built and merged — package-by-feature under
+`com.devops_platform.backend.environment`, with cross-cutting exception handling
+in `com.devops_platform.backend.common`. See
+[ADR-0005](DECISIONS/0005-package-by-feature-for-business-modules.md) for the
+package layout convention and
+[ADR-0008](DECISIONS/0008-problemdetail-as-api-error-convention.md) for the API
+error convention — both are the pattern to follow for the next modules
+(`Application`, `Deployment`, ...).
 
 ------------------------------------------------------------------------
 
@@ -105,6 +118,10 @@ Completed:
 -   Docker healthcheck for the backend
 -   Frontend ↔ backend proxy and health display
 -   First clean Git commits, trunk-based workflow defined
+-   First business module: `Environment` CRUD, with Flyway migrations,
+    MapStruct mapping, RFC 7807 error responses, and a three-tier test suite
+    (unit, Testcontainers persistence, Testcontainers API) — see
+    [ADRs 0005-0010](DECISIONS/)
 
-See [DEVELOPMENT.md](DEVELOPMENT.md) for what's still open before the first
-business module.
+See [DEVELOPMENT.md](DEVELOPMENT.md) for day-to-day commands. Next up: CI (see
+the roadmap in [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
