@@ -2,13 +2,18 @@
 
 [![CI](https://github.com/Nicolas-wrobel/devops-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Nicolas-wrobel/devops-platform/actions/workflows/ci.yml)
 
-A portfolio-grade full-stack + DevOps playground built with:
+A simulated internal platform for tracking a company's applications, their
+environments, and their deployment history — no real deployments happen;
+it's a hands-on vehicle for learning DevOps practices. Built with:
 - **Backend:** Spring Boot (Java 21, Maven)
 - **Frontend:** React + TypeScript (Vite)
 - **Database:** PostgreSQL (Docker)
-- **Infra (later):** CI/CD, Docker images, monitoring, Kubernetes/Helm
+- **Infra:** Docker, CI (GitHub Actions), observability (planned), Kubernetes/Helm (planned)
 
-The goal is to grow this repository step by step with production-like practices: clean architecture, automation, reproducible environments, and clear documentation.
+The goal is to grow this repository step by step with production-like
+practices: clean architecture, automation, reproducible environments, and
+clear documentation. See [docs/PROJECT_GUIDE.md](docs/PROJECT_GUIDE.md) for
+the full product scope and roadmap.
 
 ---
 
