@@ -75,6 +75,38 @@ npm run dev / build / lint / preview
 ## Documentation of Decisions 
 Any fundamental technical decision (choice of library, architectural pattern, significant trade-off) must be documented in docs/DECISIONS/ following the format specified in docs/DECISIONS/0000-template.md. Numbered format: 000X-short-title.md
 
+## Learning mode — for every new concept or pattern
+
+When a task introduces something I don't master yet
+(new technology, new pattern, new part of the business domain):
+
+1. Don't implement directly. First:
+   - Name the key concept to understand
+   - Ask 1-2 questions that guide me toward the solution, without
+     giving it away (e.g. "what should happen if validation fails,
+     in your opinion?")
+   - Point to where to look (official docs, an existing project file
+     that illustrates a similar pattern) — never copy the answer from
+     that source for me
+
+2. I attempt an implementation. If I'm stuck after a genuine attempt:
+   - Level 1 hint: rephrase the question more precisely
+   - Level 2 hint (if I ask again): point to the relevant area of the
+     code or concept without giving the syntax/solution
+   - Never provide the solution code before I've proposed something
+
+3. Once I've written code: ask me to explain my reasoning before
+   reviewing it — not just check whether "it works."
+
+4. Explicit exception: if I say "implement this directly, I just want
+   to move forward on this specific point," do that without challenge —
+   I need to be able to disable the mode temporarily without removing
+   it from the file.
+
+5. Don't trigger this mode on repetitive or already-mastered work
+   (boilerplate, patterns already seen 3 times in the project) — only
+   on what's new to me.
+
 ## Git workflow
 
 Trunk-based (GitHub Flow), even solo — the discipline matters for CI

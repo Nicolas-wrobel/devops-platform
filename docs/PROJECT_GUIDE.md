@@ -102,29 +102,34 @@ or entirely new steps for modules/variables not yet anticipated).
     -   Grafana
     -   Basic technical dashboard
 
-7.  Product foundation
+7.  Security foundation
+    -   Spring Security integration (authentication)
+    -   Roles / authorization model
+    -   Protect sensitive endpoints (e.g. Actuator details, mutating routes)
+    -   Decide and document the auth strategy (session vs. token), see ADR
+
+8.  Product foundation
     -   `Application` module
     -   `Application` ↔ `Environment` relationship
     -   First usable React interface
 
-8.  Deployment domain
+9.  Deployment domain
     -   Deployment model
     -   Status and history
     -   Business validations
     -   Business metrics
 
-9.  Kubernetes
+10. Kubernetes
     -   Local deployment
     -   ConfigMaps and Secrets
     -   Health probes
     -   Persistent storage
 
-10. Helm
+11. Helm
     -   Parameterized deployment
     -   Environment-specific values
 
-11. Production-readiness
-    -   Security
+12. Production-readiness
     -   Logs and traces
     -   Alerting
     -   Backup and recovery
