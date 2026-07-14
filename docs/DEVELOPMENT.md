@@ -71,7 +71,7 @@ npm run dev / build / lint / preview
     with `curl` against the running stack, Flyway migration applied
     automatically)
 
-Next up on the roadmap: container improvements (see [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
+Next up on the roadmap: observability foundation (see [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
 
 ------------------------------------------------------------------------
 

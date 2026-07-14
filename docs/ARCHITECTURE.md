@@ -15,7 +15,7 @@ Current, factual state of the stack — what exists today, not the roadmap
 | Database       | PostgreSQL 16                                             |
 | Infrastructure | Docker, Docker Compose, Git, Makefile, Bash scripts        |
 | Migrations     | Flyway (see [ADR-0006](DECISIONS/0006-adopt-flyway-with-first-module.md)) |
-| Later          | GitHub Actions, Monitoring, Kubernetes, Helm               |
+| Later          | Observability (Prometheus/Grafana), Kubernetes, Helm       |
 
 Backend dependencies currently wired: `spring-boot-starter-webmvc`,
 `spring-boot-starter-data-jpa`, `spring-boot-starter-validation`,
@@ -123,5 +123,5 @@ Completed:
     (unit, Testcontainers persistence, Testcontainers API) — see
     [ADRs 0005-0010](DECISIONS/)
 
-See [DEVELOPMENT.md](DEVELOPMENT.md) for day-to-day commands. Next up: CI (see
-the roadmap in [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
+See [DEVELOPMENT.md](DEVELOPMENT.md) for day-to-day commands. Next up:
+observability foundation (see the roadmap in [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
