@@ -3,6 +3,10 @@ services:
     ports:
       - "${POSTGRES_PORT}:5432"
 
+  prometheus:
+    ports:
+      - "${PROMETHEUS_PORT}:9090"
+
   backend:
     build:
       context: ../../apps/backend
