@@ -71,7 +71,8 @@ npm run dev / build / lint / preview
     with `curl` against the running stack, Flyway migration applied
     automatically)
 
-Next up on the roadmap: observability foundation (see [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
+Next up on the roadmap: Grafana + a basic technical dashboard, to close out
+the observability foundation (see [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
 
 ------------------------------------------------------------------------
 
@@ -80,13 +81,17 @@ Next up on the roadmap: observability foundation (see [PROJECT_GUIDE.md](PROJECT
 Type checks and unit tests don't confirm the stack actually boots — verify
 with:
 
-1. `make dev` then `make dev-ps` — everything up and healthy.
+1. `make dev` then `make dev-ps` — everything up and healthy (`db`,
+   `backend`, `frontend`, `prometheus`).
 2. Backend: `./mvnw test` (once tests exist for the change).
 3. Frontend: `npm run lint` / `npm run build`.
 4. Confirm `curl http://localhost:8080/actuator/health` returns `200` with
    `"status":"UP"`.
+5. Confirm Prometheus is scraping the backend: open the UI on
+   `${PROMETHEUS_PORT}` → Status → Targets, and check `backend` is `UP`
+   (see [ADR-0013](DECISIONS/0013-prometheus-metrics-scraping.md)).
 
 Steps 2 and 3 also run automatically on every push/PR to `main` via
 [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) (see
-[ADR-0011](DECISIONS/0011-ci-with-github-actions.md)) — step 1 and 4 stay
-manual for now.
+[ADR-0011](DECISIONS/0011-ci-with-github-actions.md)) — steps 1, 4, and 5
+stay manual for now.
