@@ -2,15 +2,17 @@ package com.devops_platform.backend.environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.devops_platform.backend.common.AbstractIntegrationTest;
+import com.devops_platform.backend.common.PostgresContainerConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.context.annotation.Import;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class EnvironmentRepositoryTest extends AbstractIntegrationTest {
+@Import(PostgresContainerConfig.class)
+class EnvironmentRepositoryTest {
 
     @Autowired
     private EnvironmentRepository repository;
