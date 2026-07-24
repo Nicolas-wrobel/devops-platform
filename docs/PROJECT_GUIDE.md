@@ -97,9 +97,9 @@ or entirely new steps for modules/variables not yet anticipated).
 5.  Container hardening — done (non-root prod backend, alpine JRE runtime, pinned base image versions, frontend healthcheck, see [ADR-0012](DECISIONS/0012-container-hardening.md))
 
 6.  Observability foundation
-    -   Actuator and Micrometer
-    -   Prometheus
-    -   Grafana
+    -   Actuator and Micrometer — done (see [ADR-0004](DECISIONS/0004-actuator-vs-custom-health.md))
+    -   Prometheus — done (see [ADR-0013](DECISIONS/0013-prometheus-metrics-scraping.md))
+    -   Grafana — done (see [ADR-0015](DECISIONS/0015-grafana-for-metrics-visualization.md))
     -   Basic technical dashboard
 
 7.  Security foundation
