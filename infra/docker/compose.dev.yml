@@ -7,6 +7,10 @@ services:
     ports:
       - "${PROMETHEUS_PORT}:9090"
 
+  grafana:
+    ports:
+      - "${GRAFANA_PORT}:3000"
+
   backend:
     build:
       context: ../../apps/backend

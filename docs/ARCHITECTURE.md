@@ -15,7 +15,7 @@ Current, factual state of the stack — what exists today, not the roadmap
 | Database       | PostgreSQL 16                                             |
 | Infrastructure | Docker, Docker Compose, Git, Makefile, Bash scripts        |
 | Migrations     | Flyway (see [ADR-0006](DECISIONS/0006-adopt-flyway-with-first-module.md)) |
-| Observability  | Micrometer + Prometheus (see [ADR-0013](DECISIONS/0013-prometheus-metrics-scraping.md)); Grafana next |
+| Observability  | Micrometer + Prometheus (see [ADR-0013](DECISIONS/0013-prometheus-metrics-scraping.md)) + Grafana (see [ADR-0015](DECISIONS/0015-grafana-for-metrics-visualization.md)); basic dashboard next |
 | Later          | Kubernetes, Helm                                          |
 
 Backend dependencies currently wired: `spring-boot-starter-webmvc`,
@@ -91,6 +91,17 @@ Three Compose files, layered (rationale in
     service-name DNS — no explicit `networks:` needed, same mechanism `db`
     and `backend` already rely on. No `depends_on` on `backend`: a
     momentarily-down scrape target just retries on the next interval.
+  - `grafana` (see [ADR-0015](DECISIONS/0015-grafana-for-metrics-visualization.md))
+    — image pinned to `grafana/grafana:13.1.1`, admin credentials from
+    `GF_SECURITY_ADMIN_USER`/`GF_SECURITY_ADMIN_PASSWORD`, data persisted
+    in a named `grafana_data` volume, healthcheck via `wget --spider`
+    against `/api/health`. `depends_on: prometheus: condition:
+    service_healthy` — unlike Prometheus's own scrape loop, Grafana
+    queries Prometheus on demand, so it waits for Prometheus's healthcheck
+    to actually pass before starting. Prometheus is added as a data source
+    manually through the UI (`http://prometheus:9090`, by the same
+    service-name DNS mechanism) — not provisioned as code, a deliberate
+    scope choice for now (see ADR-0015).
 
 - **`compose.dev.yml`** — hot-reload setup:
   - `backend` builds from `Dockerfile.dev` (no `COPY`; source is bind-mounted
@@ -98,7 +109,7 @@ Three Compose files, layered (rationale in
   - `frontend` builds from `Dockerfile.dev`, bind-mounts `apps/frontend`,
     runs `npm run dev -- --host 0.0.0.0 --port 5173`.
   - Ports exposed on the host via `${SPRING_BOOT_PORT}` / `${REACT_PORT}` /
-    `${POSTGRES_PORT}` / `${PROMETHEUS_PORT}`.
+    `${POSTGRES_PORT}` / `${PROMETHEUS_PORT}` / `${GRAFANA_PORT}`.
 
 - **`compose.prod.yml`** — immutable artifact setup:
   - `backend` builds from the multi-stage `Dockerfile` (Maven build stage →
@@ -108,9 +119,12 @@ Three Compose files, layered (rationale in
   - No bind mounts — containers run what was actually built into the image.
   - `prometheus` exposes the same `${PROMETHEUS_PORT}` as dev — no dev/prod
     behavioral split for this service.
+  - `grafana` exposes the same `${GRAFANA_PORT}` as dev — no dev/prod
+    behavioral split for this service either.
 
 Local URLs: frontend `:5173` (dev) / `:80` (prod), backend `:8080`,
-Postgres `:5432`, Prometheus UI `:9090`.
+Postgres `:5432`, Prometheus UI `:9090`, Grafana UI `:3000` (container
+port — actual host port set by `${GRAFANA_PORT}`).
 
 ------------------------------------------------------------------------
 
@@ -144,7 +158,10 @@ Completed:
 -   Metrics endpoint (`/actuator/prometheus` via Micrometer) and a
     Prometheus service scraping it, both wired into the Compose stack — see
     [ADR-0013](DECISIONS/0013-prometheus-metrics-scraping.md)
+-   Grafana wired into the Compose stack, connected to Prometheus as a
+    data source (added manually through the UI) — see
+    [ADR-0015](DECISIONS/0015-grafana-for-metrics-visualization.md)
 
-See [DEVELOPMENT.md](DEVELOPMENT.md) for day-to-day commands. Next up:
-Grafana + a basic technical dashboard, to close out the observability
+See [DEVELOPMENT.md](DEVELOPMENT.md) for day-to-day commands. Next up: a
+basic technical dashboard in Grafana, to close out the observability
 foundation (see the roadmap in [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
