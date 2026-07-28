@@ -96,11 +96,11 @@ or entirely new steps for modules/variables not yet anticipated).
 4.  CI — done (GitHub Actions, see [ADR-0011](DECISIONS/0011-ci-with-github-actions.md))
 5.  Container hardening — done (non-root prod backend, alpine JRE runtime, pinned base image versions, frontend healthcheck, see [ADR-0012](DECISIONS/0012-container-hardening.md))
 
-6.  Observability foundation
+6.  Observability foundation — done
     -   Actuator and Micrometer — done (see [ADR-0004](DECISIONS/0004-actuator-vs-custom-health.md))
     -   Prometheus — done (see [ADR-0013](DECISIONS/0013-prometheus-metrics-scraping.md))
     -   Grafana — done (see [ADR-0015](DECISIONS/0015-grafana-for-metrics-visualization.md))
-    -   Basic technical dashboard
+    -   Basic technical dashboard — done (see [ADR-0016](DECISIONS/0016-basic-technical-dashboard.md))
 
 7.  Security foundation
     -   Spring Security integration (authentication)
