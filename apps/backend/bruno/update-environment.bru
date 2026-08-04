@@ -1,0 +1,28 @@
+meta {
+  name: Update Environment
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{baseUrl}}/api/environments/:id
+  body: json
+  auth: basic
+}
+
+params:path {
+  id: 1
+}
+
+auth:basic {
+  username: {{admin_user}}
+  password: {{admin_password}}
+}
+
+body:json {
+  {
+    "name": "staging",
+    "type": "STAGING",
+    "description": "Repurposed environment"
+  }
+}

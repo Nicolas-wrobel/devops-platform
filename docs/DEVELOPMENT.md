@@ -63,6 +63,14 @@ Schema changes go through Flyway, not `ddl-auto` (see
 one. Migrations run automatically on backend startup, in Docker or via
 `./mvnw spring-boot:run`.
 
+**Manual API testing**: a [Bruno](https://www.usebruno.com/) collection lives in
+`apps/backend/bruno/` (git-friendly plain-text requests, no cloud account).
+Open the folder in Bruno, then copy
+`apps/backend/bruno/environments/local.bru.example` to `local.bru` (same
+folder) and fill in the same admin/Prometheus credentials as your
+`.env.dev` — `local.bru` is gitignored, same principle as the `.env.*`
+files.
+
 **Frontend** (from `apps/frontend/`, outside Docker):
 ```bash
 npm run dev / build / lint / preview

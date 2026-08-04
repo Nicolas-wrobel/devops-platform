@@ -24,6 +24,9 @@ build/
 infra/docker/secrets/*
 !infra/docker/secrets/*.example
 
+# Bruno local environment (see apps/backend/bruno/environments/local.bru.example)
+apps/backend/bruno/environments/local.bru
+
 # Node
 npm-debug.log*
 yarn-debug.log*

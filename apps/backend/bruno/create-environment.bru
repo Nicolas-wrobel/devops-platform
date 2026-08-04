@@ -1,0 +1,24 @@
+meta {
+  name: Create Environment
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/environments
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{admin_user}}
+  password: {{admin_password}}
+}
+
+body:json {
+  {
+    "name": "staging",
+    "type": "STAGING",
+    "description": "Example environment"
+  }
+}

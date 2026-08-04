@@ -1,0 +1,16 @@
+meta {
+  name: List Environments
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/environments
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{admin_user}}
+  password: {{admin_password}}
+}
