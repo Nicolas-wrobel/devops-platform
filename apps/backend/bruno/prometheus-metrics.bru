@@ -1,0 +1,16 @@
+meta {
+  name: Prometheus Metrics
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/actuator/prometheus
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{prometheus_user}}
+  password: {{prometheus_password}}
+}

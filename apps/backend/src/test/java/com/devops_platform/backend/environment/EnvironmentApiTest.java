@@ -15,6 +15,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -25,6 +26,7 @@ class EnvironmentApiTest {
     private MockMvc mockMvc;
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     void fullCrudLifecycle() throws Exception {
         String createBody = """
                 {"name":"production","type":"PRODUCTION","description":"Main env"}
@@ -61,6 +63,7 @@ class EnvironmentApiTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     void create_returnsBadRequest_whenNameIsBlank() throws Exception {
         String invalidBody = """
                 {"name":"","type":"PRODUCTION"}
@@ -74,6 +77,7 @@ class EnvironmentApiTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     void create_returnsConflict_whenNameAlreadyExists() throws Exception {
         String body = """
                 {"name":"staging-eu","type":"STAGING"}
@@ -91,8 +95,22 @@ class EnvironmentApiTest {
     }
 
     @Test
+    @WithMockUser(roles = {"USER"})
     void getById_returnsNotFound_whenEnvironmentDoesNotExist() throws Exception {
         mockMvc.perform(get("/api/environments/{id}", 999_999L))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(roles = {"USER"})
+    void create_returnsForbidden_whenCallerLacksAdminRole() throws Exception {
+        String body = """
+                {"name":"forbidden-env","type":"STAGING"}
+                """;
+
+        mockMvc.perform(post("/api/environments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isForbidden());
     }
 }

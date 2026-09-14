@@ -1,0 +1,20 @@
+meta {
+  name: Delete Environment
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}/api/environments/:id
+  body: none
+  auth: basic
+}
+
+params:path {
+  id: 1
+}
+
+auth:basic {
+  username: {{admin_user}}
+  password: {{admin_password}}
+}

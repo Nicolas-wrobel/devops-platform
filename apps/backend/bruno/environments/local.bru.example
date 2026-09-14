@@ -1,0 +1,7 @@
+vars {
+  baseUrl: http://localhost:8080
+  admin_user: exampleuser
+  admin_password: examplepass
+  prometheus_user: exampleuser
+  prometheus_password: examplepass
+}

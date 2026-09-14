@@ -20,6 +20,13 @@ build/
 .env.dev
 .env.prod
 
+# Docker Compose file-based secrets (see infra/docker/secrets/*.example)
+infra/docker/secrets/*
+!infra/docker/secrets/*.example
+
+# Bruno local environment (see apps/backend/bruno/environments/local.bru.example)
+apps/backend/bruno/environments/local.bru
+
 # Node
 npm-debug.log*
 yarn-debug.log*

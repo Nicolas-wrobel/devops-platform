@@ -11,10 +11,11 @@ COPY src ./src
 RUN mvn -q -DskipTests package
 
 # 2) Runtime
-FROM eclipse-temurin:21.0.11_10-jre-alpine
+FROM eclipse-temurin:21.0.12_8-jre-alpine
 WORKDIR /app
 
-RUN apk add --no-cache curl \
+RUN apk upgrade --no-cache \
+    && apk add --no-cache curl \
     && addgroup -S appgroup && adduser -S -G appgroup appuser
 
 COPY --from=build --chown=appuser:appgroup /src/target/*.jar app.jar

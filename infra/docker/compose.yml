@@ -19,6 +19,9 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
+    secrets:
+      - prometheus_scrape_username
+      - prometheus_scrape_password
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - '--storage.tsdb.path=/prometheus'
@@ -53,6 +56,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      PASSWORD_ENCODER_ID: ${PASSWORD_ENCODER_ID}
+      APP_ADMIN_USER: ${APP_ADMIN_USER}
+      APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD}
+      PROMETHEUS_SCRAPE_USER: ${PROMETHEUS_SCRAPE_USER}
+      PROMETHEUS_SCRAPE_PASSWORD: ${PROMETHEUS_SCRAPE_PASSWORD}
     depends_on:
       db:
         condition: service_healthy
@@ -74,3 +82,9 @@ volumes:
   grafana_data:
   m2_cache:
   maven_target:
+
+secrets:
+  prometheus_scrape_username:
+    file: ./secrets/prometheus_scrape_username
+  prometheus_scrape_password:
+    file: ./secrets/prometheus_scrape_password

@@ -32,6 +32,15 @@ Env vars live in `infra/docker/.env.dev` / `.env.prod` — copy
 [ADR-0003](DECISIONS/0003-env-files-strategy.md)). These files are
 gitignored — never commit them.
 
+Prometheus's scrape credentials additionally need two file-based secrets
+(Prometheus config itself has no env var interpolation): copy each
+`infra/docker/secrets/*.example` file to the same name without
+`.example`, and fill in the same username/password you set for
+`PROMETHEUS_SCRAPE_USER`/`PROMETHEUS_SCRAPE_PASSWORD` in your `.env.*`
+file (see [ADR-0017](DECISIONS/0017-jwt-based-authentication-strategy.md)
+for the auth model these credentials plug into). Gitignored, same as the
+`.env.*` files — keep both copies in sync manually.
+
 **Backend** (from `apps/backend/`, outside Docker):
 ```bash
 ./mvnw spring-boot:run
@@ -53,6 +62,14 @@ Schema changes go through Flyway, not `ddl-auto` (see
 `apps/backend/src/main/resources/db/migration/`, never edit an already-applied
 one. Migrations run automatically on backend startup, in Docker or via
 `./mvnw spring-boot:run`.
+
+**Manual API testing**: a [Bruno](https://www.usebruno.com/) collection lives in
+`apps/backend/bruno/` (git-friendly plain-text requests, no cloud account).
+Open the folder in Bruno, then copy
+`apps/backend/bruno/environments/local.bru.example` to `local.bru` (same
+folder) and fill in the same admin/Prometheus credentials as your
+`.env.dev` — `local.bru` is gitignored, same principle as the `.env.*`
+files.
 
 **Frontend** (from `apps/frontend/`, outside Docker):
 ```bash
