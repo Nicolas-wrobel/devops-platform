@@ -26,7 +26,7 @@ class EnvironmentApiTest {
     private MockMvc mockMvc;
 
     @Test
-    @WithMockUser(roles = {"USER"})
+    @WithMockUser(roles = {"ADMIN"})
     void fullCrudLifecycle() throws Exception {
         String createBody = """
                 {"name":"production","type":"PRODUCTION","description":"Main env"}
@@ -63,7 +63,7 @@ class EnvironmentApiTest {
     }
 
     @Test
-    @WithMockUser(roles = {"USER"})
+    @WithMockUser(roles = {"ADMIN"})
     void create_returnsBadRequest_whenNameIsBlank() throws Exception {
         String invalidBody = """
                 {"name":"","type":"PRODUCTION"}
@@ -77,7 +77,7 @@ class EnvironmentApiTest {
     }
 
     @Test
-    @WithMockUser(roles = {"USER"})
+    @WithMockUser(roles = {"ADMIN"})
     void create_returnsConflict_whenNameAlreadyExists() throws Exception {
         String body = """
                 {"name":"staging-eu","type":"STAGING"}
@@ -99,5 +99,18 @@ class EnvironmentApiTest {
     void getById_returnsNotFound_whenEnvironmentDoesNotExist() throws Exception {
         mockMvc.perform(get("/api/environments/{id}", 999_999L))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(roles = {"USER"})
+    void create_returnsForbidden_whenCallerLacksAdminRole() throws Exception {
+        String body = """
+                {"name":"forbidden-env","type":"STAGING"}
+                """;
+
+        mockMvc.perform(post("/api/environments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isForbidden());
     }
 }
