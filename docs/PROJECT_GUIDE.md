@@ -102,11 +102,19 @@ or entirely new steps for modules/variables not yet anticipated).
     -   Grafana — done (see [ADR-0015](DECISIONS/0015-grafana-for-metrics-visualization.md))
     -   Basic technical dashboard — done (see [ADR-0016](DECISIONS/0016-basic-technical-dashboard.md))
 
-7.  Security foundation
-    -   Spring Security integration (authentication)
-    -   Roles / authorization model
-    -   Protect sensitive endpoints (e.g. Actuator details, mutating routes)
-    -   Decide and document the auth strategy (session vs. token), see ADR
+7.  Security foundation — done
+    -   Spring Security integration (authentication) — done (JWT via
+        OAuth2 Resource Server, see [ADR-0017](DECISIONS/0017-jwt-based-authentication-strategy.md)
+        and [ADR-0018](DECISIONS/0018-jwt-implementation-resource-server-hs256-dual-chains.md))
+    -   Roles / authorization model — done (`Environment` reads require
+        authentication, writes require `ADMIN`; a dedicated `METRICS`
+        role scopes Prometheus scraping)
+    -   Protect sensitive endpoints — done (Actuator split across a
+        Basic/JWT dual filter chain, see ADR-0018)
+    -   Decide and document the auth strategy (session vs. token) —
+        done, see [ADR-0017](DECISIONS/0017-jwt-based-authentication-strategy.md)
+    -   CORS policy, security headers, CI security scanning (dependency/
+        secret/container) — done, see [ADR-0019](DECISIONS/0019-ci-security-scanning.md)
 
 8.  Product foundation
     -   `Application` module
