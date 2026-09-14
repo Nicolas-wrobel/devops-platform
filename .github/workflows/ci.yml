@@ -67,7 +67,10 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
-      - run: npm audit --audit-level=high
+      # --omit=dev: only what actually ships to the browser. Vite/rollup/etc.
+      # (devDependencies) generate a lot of build-tooling-only advisory noise
+      # that never reaches production and isn't actionable here.
+      - run: npm audit --omit=dev --audit-level=high
 
   secret-scan:
     runs-on: ubuntu-latest
