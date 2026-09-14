@@ -25,33 +25,6 @@ jobs:
           cache: maven
       - run: ./mvnw test
 
-  backend-dependency-scan:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/backend
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '21'
-          cache: maven
-      # Vulnerability data (NVD feed) is cached across runs — without it, every
-      # run re-downloads the full feed, which is slow and rate-limited without
-      # an NVD_API_KEY secret. continue-on-error for now: without that key this
-      # job can be too flaky to gate merges on; revisit once one is configured
-      # (https://nvd.nist.gov/developers/request-an-api-key) and this has been
-      # observed to run reliably.
-      - uses: actions/cache@v5
-        with:
-          path: ~/.m2/repository/org/owasp/dependency-check-data
-          key: owasp-dependency-check-data
-      - run: ./mvnw org.owasp:dependency-check-maven:check
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        continue-on-error: true
-
   frontend:
     runs-on: ubuntu-latest
     defaults:

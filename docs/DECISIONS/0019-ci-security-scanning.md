@@ -16,18 +16,24 @@ dependencies, leaked secrets, or vulnerable base images.
   minimal option catches known-vulnerable dependencies for free but
   misses secrets accidentally committed and vulnerabilities baked into
   the built container images.
-- **OWASP dependency-check-maven** was the main cost/benefit call: it
-  scans Java dependencies against the NVD feed, but without an
-  `NVD_API_KEY` secret it's slow and rate-limited enough to make CI
-  unreliable as a hard merge gate.
+- **OWASP dependency-check-maven**, tried first: scans Java dependencies
+  against the NVD feed directly. Without an `NVD_API_KEY` (a manual,
+  email-gated signup this project doesn't have yet), the public NVD API
+  rate-limits hard enough that a first sync ran 25+ minutes before being
+  cancelled by the next push. Options at that point: get the key, keep
+  the tool with `continue-on-error`, or drop it since Dependabot alerts
+  (already enabled) cover largely the same "vulnerable dependency"
+  signal without ever touching NVD directly or costing CI time.
 
 ## Decision
-Full bundle: `npm audit` (frontend), Dependabot alerts (enabled at the
-repo level), `gitleaks` (secret scanning across git history), `Trivy`
-(scans the actual built prod images, not just source), and OWASP
-`dependency-check-maven` (backend deps) — the last one wired with
-`continue-on-error: true` and a cached NVD data directory until an
-`NVD_API_KEY` is configured and the job's been observed to run reliably.
+`npm audit --omit=dev` (frontend, scoped to what actually ships —
+devDependencies like Vite/Rollup generate a lot of build-tooling-only
+noise), Dependabot alerts (enabled at the repo level), `gitleaks`
+(secret scanning across git history), and `Trivy` (scans the actual
+built prod images, not just source). **No OWASP dependency-check-maven**
+— dropped after the NVD rate-limiting problem above, in favor of relying
+on Dependabot for the dependency-vulnerability signal instead of running
+a second, slower tool covering mostly the same ground.
 
 Two supply-chain findings surfaced *while wiring this up*, fixed before
 landing: `aquasecurity/trivy-action` had 76 of 77 version tags hijacked
@@ -38,13 +44,23 @@ unaffected tag (`0.35.0`) rather than a mutable tag. Separately,
 GitHub was days from dropping Node 20 runner support — bumped to
 `gitleaks-action@v3` (also SHA-pinned) and `actions/cache@v5`.
 
+Trivy's very first real run also caught genuine CRITICAL/HIGH CVEs
+already present in the backend image (Spring Boot, Spring Security,
+Spring Framework, Jackson) — fixed by bumping the Spring Boot parent to
+4.0.8, which pulled in patched versions of all of them transitively via
+Boot's own dependency management.
+
 ## Consequences
-- The OWASP job can go green/red somewhat inconsistently until an NVD
-  API key is added — `continue-on-error` means it won't block merges in
-  the meantime, but also means it's not yet a real gate. Revisit once a
-  key is configured.
+- Dependency-vulnerability coverage for the backend now comes from
+  Dependabot alone, not a dedicated CI step — no local HTML report, and
+  it's a GitHub-side signal (visible in the Security tab) rather than a
+  PR check. Revisit if that turns out to be insufficient, or once an
+  `NVD_API_KEY` makes dependency-check-maven fast enough to be worth
+  re-adding (https://nvd.nist.gov/developers/request-an-api-key);
+  `grype` was also considered as a faster alternative with its own
+  vulnerability DB sync, not requiring an NVD key at all.
 - Third-party (non-`actions/*`) GitHub Actions in this repo are now
   pinned to a commit SHA rather than a tag, on principle — a mutable tag
   is not a security boundary, as the Trivy incident demonstrated.
-- New base images or dependencies will periodically trip these scans;
-  that's the intended behavior, not a bug to work around.
+- New base images or dependencies will periodically trip `npm audit`/
+  Trivy; that's the intended behavior, not a bug to work around.
