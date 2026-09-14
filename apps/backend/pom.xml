@@ -16,6 +16,10 @@
 	<properties>
 		<java.version>21</java.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
+		<!-- Boot 4.0.8's managed tomcat-embed-core (11.0.24) has 3 CRITICAL CVEs
+		     (auth bypass / access control) fixed in 11.0.25 — override until a
+		     Boot patch bumps this itself. -->
+		<tomcat.version>11.0.25</tomcat.version>
 	</properties>
 	<dependencies>
 		<dependency>
