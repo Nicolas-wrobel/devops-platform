@@ -53,8 +53,8 @@ class ApplicationEnvironmentApiTest {
     @Test
     @WithMockUser(roles = {"ADMIN"})
     void link_returnsConflict_whenAlreadyLinked() throws Exception {
-        long applicationId = createApplication("billing-service");
-        long environmentId = createEnvironment("billing-staging");
+        long applicationId = createApplication("invoicing-service");
+        long environmentId = createEnvironment("invoicing-staging");
 
         mockMvc.perform(post("/api/applications/{id}/environments/{envId}", applicationId, environmentId))
                 .andExpect(status().isCreated());
