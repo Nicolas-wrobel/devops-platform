@@ -72,8 +72,8 @@ public class SecurityConfig {
 			)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/login/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/environments/**").authenticated()
-                .requestMatchers("/api/environments/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/environments/**", "/api/applications/**").authenticated()
+                .requestMatchers("/api/environments/**", "/api/applications/**").hasRole("ADMIN")
                 .anyRequest().authenticated())
             .cors(Customizer.withDefaults())
             .headers(headers -> headers
