@@ -116,10 +116,13 @@ or entirely new steps for modules/variables not yet anticipated).
     -   CORS policy, security headers, CI security scanning (dependency/
         secret/container) — done, see [ADR-0019](DECISIONS/0019-ci-security-scanning.md)
 
-8.  Product foundation
-    -   `Application` module
-    -   `Application` ↔ `Environment` relationship
-    -   First usable React interface
+8.  Product foundation — done
+    -   `Application` module — done (mirrors `Environment`, see [ADR-0005](DECISIONS/0005-package-by-feature-for-business-modules.md))
+    -   `Application` ↔ `Environment` relationship — done (dedicated
+        `ApplicationEnvironment` entity, not a plain many-to-many, so it
+        can grow attributes once step 9 needs them)
+    -   First usable React interface — done (react-router, axios,
+        Tailwind CSS; login + `Environment`/`Application` CRUD)
 
 9.  Deployment domain
     -   Deployment model
