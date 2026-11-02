@@ -124,11 +124,18 @@ or entirely new steps for modules/variables not yet anticipated).
     -   First usable React interface — done (react-router, axios,
         Tailwind CSS; login + `Environment`/`Application` CRUD)
 
-9.  Deployment domain
-    -   Deployment model
-    -   Status and history
-    -   Business validations
-    -   Business metrics
+9.  Deployment domain — done
+    -   Deployment model — done (`Deployment` entity, package-by-feature
+        under `deployment/`, see [ADR-0020](DECISIONS/0020-deployment-status-model-and-scheduler.md))
+    -   Status and history — done (`PENDING → RUNNING → SUCCESS|FAILED`
+        state machine; history is the `Deployment` rows themselves,
+        filterable by application/environment; see [ADR-0020](DECISIONS/0020-deployment-status-model-and-scheduler.md))
+    -   Business validations — done (only one `RUNNING` deployment per
+        application/environment link at a time, enforced in
+        `DeploymentService`, see [ADR-0020](DECISIONS/0020-deployment-status-model-and-scheduler.md))
+    -   Business metrics — done (Micrometer `Gauge`/`Counter`/`Timer` on
+        deployment status/completions/duration, three new Grafana panels,
+        see [ADR-0021](DECISIONS/0021-deployment-business-metrics.md))
 
 10. Kubernetes
     -   Local deployment

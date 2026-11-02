@@ -88,8 +88,7 @@ npm run dev / build / lint / preview
     with `curl` against the running stack, Flyway migration applied
     automatically)
 
-Next up on the roadmap: a basic technical dashboard in Grafana, to close
-out the observability foundation (see [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
+Next up on the roadmap: Kubernetes (see [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
 
 ------------------------------------------------------------------------
 
