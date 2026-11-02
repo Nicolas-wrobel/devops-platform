@@ -20,4 +20,16 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // shadcn/ui components are vendored, generated code (copied in via the
+    // shadcn CLI, not hand-authored) — they conventionally export a
+    // `*Variants` helper alongside the component itself, which trips
+    // react-refresh/only-export-components. Accepted here rather than
+    // restructured, consistent with how shadcn projects generally treat
+    // src/components/ui/** as generated.
+    files: ['src/components/ui/**/*.{ts,tsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])
