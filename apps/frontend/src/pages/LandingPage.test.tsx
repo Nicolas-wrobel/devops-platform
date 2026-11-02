@@ -6,7 +6,16 @@ import { LandingPage } from './LandingPage'
 vi.mock('../lib/api', () => ({
   api: {
     get: vi.fn().mockResolvedValue({
-      data: { applicationCount: 2, environmentCount: 3, deploymentCount: 10, successRatePercent: 80 },
+      data: {
+        applicationCount: 2,
+        environmentCount: 3,
+        deploymentCount: 10,
+        successRatePercent: 80,
+        pendingCount: 1,
+        runningCount: 0,
+        successCount: 8,
+        failedCount: 1,
+      },
     }),
   },
 }))
@@ -50,5 +59,20 @@ describe('LandingPage', () => {
 
     expect(await screen.findByText('2')).toBeInTheDocument()
     expect(screen.getByText('80%')).toBeInTheDocument()
+  })
+
+  it('renders the status chart once stats are loaded, without needing to log in', async () => {
+    mockUseAuth.mockReturnValue({ isAuthenticated: false })
+
+    render(
+      <MemoryRouter>
+        <LandingPage />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('Deployments by status')).toBeInTheDocument()
+    for (const status of ['PENDING', 'RUNNING', 'SUCCESS', 'FAILED']) {
+      expect(screen.getAllByText(status).length).toBeGreaterThan(0)
+    }
   })
 })

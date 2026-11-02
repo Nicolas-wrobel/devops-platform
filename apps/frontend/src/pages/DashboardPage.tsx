@@ -1,36 +1,20 @@
 import { LayoutDashboard } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Bar, BarChart, CartesianGrid, Cell, XAxis } from 'recharts'
 import { toast } from 'sonner'
 import { DeploymentStatusBadge } from '../components/DeploymentStatusBadge'
+import { DeploymentStatusChart } from '../components/DeploymentStatusChart'
 import { Nav } from '../components/Nav'
 import { Card, CardContent } from '../components/ui/card'
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '../components/ui/chart'
 import { api } from '../lib/api'
-import { useIsDarkMode } from '../lib/theme'
-import type { ApplicationResponse, DeploymentResponse, DeploymentStatus, EnvironmentResponse } from '../lib/types'
+import { DEPLOYMENT_STATUSES } from '../lib/deploymentStatusChart'
+import type { ApplicationResponse, DeploymentResponse, EnvironmentResponse } from '../lib/types'
 
 const RECENT_DEPLOYMENTS_LIMIT = 8
-const DEPLOYMENT_STATUSES: DeploymentStatus[] = ['PENDING', 'RUNNING', 'SUCCESS', 'FAILED']
-
-// Matches the colors used by DeploymentStatusBadge, so the chart and the
-// badges in the "recent deployments" list agree visually.
-const STATUS_COLORS: Record<DeploymentStatus, string> = {
-  PENDING: 'var(--muted-foreground)',
-  RUNNING: '#2563eb',
-  SUCCESS: '#16a34a',
-  FAILED: 'var(--destructive)',
-}
-
-const chartConfig: ChartConfig = {
-  count: { label: 'Deployments' },
-}
 
 export function DashboardPage() {
   const [applications, setApplications] = useState<ApplicationResponse[]>([])
   const [environments, setEnvironments] = useState<EnvironmentResponse[]>([])
   const [deployments, setDeployments] = useState<DeploymentResponse[]>([])
-  const isDarkMode = useIsDarkMode()
 
   useEffect(() => {
     let ignore = false
@@ -62,11 +46,9 @@ export function DashboardPage() {
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, RECENT_DEPLOYMENTS_LIMIT)
 
-  const statusChartData = DEPLOYMENT_STATUSES.map((status) => ({
-    status,
-    count: deployments.filter((d) => d.status === status).length,
-    fill: STATUS_COLORS[status],
-  }))
+  const statusCounts = Object.fromEntries(
+    DEPLOYMENT_STATUSES.map((status) => [status, deployments.filter((d) => d.status === status).length]),
+  ) as Record<(typeof DEPLOYMENT_STATUSES)[number], number>
 
   return (
     <div className="min-h-screen">
@@ -86,25 +68,7 @@ export function DashboardPage() {
         <Card className="mb-8">
           <CardContent>
             <h2 className="mb-3 text-sm font-medium text-muted-foreground">Deployments by status</h2>
-            {/* Recharts doesn't repaint SVG fill="var(--token)" when the
-                CSS variable's value changes without a resize — forcing a
-                remount on theme change is the reliable fix. */}
-            <ChartContainer
-              key={isDarkMode ? 'dark' : 'light'}
-              config={chartConfig}
-              className="aspect-auto h-48 w-full"
-            >
-              <BarChart data={statusChartData}>
-                <CartesianGrid vertical={false} />
-                <XAxis dataKey="status" tickLine={false} axisLine={false} tickMargin={8} />
-                <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                <Bar dataKey="count" radius={4}>
-                  {statusChartData.map((entry) => (
-                    <Cell key={entry.status} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ChartContainer>
+            <DeploymentStatusChart counts={statusCounts} />
           </CardContent>
         </Card>
 

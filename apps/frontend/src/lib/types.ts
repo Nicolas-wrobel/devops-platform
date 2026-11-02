@@ -39,4 +39,8 @@ export interface StatsResponse {
   environmentCount: number
   deploymentCount: number
   successRatePercent: number | null
+  pendingCount: number
+  runningCount: number
+  successCount: number
+  failedCount: number
 }

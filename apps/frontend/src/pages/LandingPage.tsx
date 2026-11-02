@@ -1,6 +1,7 @@
 import { Workflow } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { DeploymentStatusChart } from '../components/DeploymentStatusChart'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { buttonVariants } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
@@ -73,6 +74,22 @@ export function LandingPage() {
             value={stats && stats.successRatePercent !== null ? `${stats.successRatePercent.toFixed(0)}%` : stats ? '—' : undefined}
           />
         </div>
+
+        {stats && (
+          <Card className="mt-12">
+            <CardContent>
+              <h2 className="mb-3 text-sm font-medium text-muted-foreground">Deployments by status</h2>
+              <DeploymentStatusChart
+                counts={{
+                  PENDING: stats.pendingCount,
+                  RUNNING: stats.runningCount,
+                  SUCCESS: stats.successCount,
+                  FAILED: stats.failedCount,
+                }}
+              />
+            </CardContent>
+          </Card>
+        )}
 
         <div className="mt-16">
           <h2 className="text-lg font-semibold text-foreground">What it tracks</h2>
