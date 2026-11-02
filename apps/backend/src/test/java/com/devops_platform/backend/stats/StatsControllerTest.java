@@ -26,6 +26,10 @@ class StatsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.applicationCount").isNumber())
                 .andExpect(jsonPath("$.environmentCount").isNumber())
-                .andExpect(jsonPath("$.deploymentCount").isNumber());
+                .andExpect(jsonPath("$.deploymentCount").isNumber())
+                .andExpect(jsonPath("$.pendingCount").isNumber())
+                .andExpect(jsonPath("$.runningCount").isNumber())
+                .andExpect(jsonPath("$.successCount").isNumber())
+                .andExpect(jsonPath("$.failedCount").isNumber());
     }
 }

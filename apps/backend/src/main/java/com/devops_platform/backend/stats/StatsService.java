@@ -26,6 +26,8 @@ public class StatsService {
     }
 
     public StatsResponse getStats() {
+        long pendingCount = deploymentRepository.countByStatus(DeploymentStatus.PENDING);
+        long runningCount = deploymentRepository.countByStatus(DeploymentStatus.RUNNING);
         long successCount = deploymentRepository.countByStatus(DeploymentStatus.SUCCESS);
         long failedCount = deploymentRepository.countByStatus(DeploymentStatus.FAILED);
         long completedCount = successCount + failedCount;
@@ -38,6 +40,10 @@ public class StatsService {
                 applicationRepository.count(),
                 environmentRepository.count(),
                 deploymentRepository.count(),
-                successRatePercent);
+                successRatePercent,
+                pendingCount,
+                runningCount,
+                successCount,
+                failedCount);
     }
 }

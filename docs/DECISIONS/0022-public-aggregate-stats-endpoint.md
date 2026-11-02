@@ -59,3 +59,11 @@ other matcher is touched.
 - The frontend landing page can now show a genuinely live signal without requiring a
   backend change every time new "public-safe" data is wanted — any future addition
   still has to go through the same narrow-scope discipline this ADR establishes.
+
+## Addendum (2026-11-02)
+`StatsResponse` gained four fields — `pendingCount`, `runningCount`, `successCount`,
+`failedCount` — so the public landing page can render the same per-status bar chart
+the authenticated dashboard already shows (see ADR-0023), without requiring a login.
+This doesn't change the boundary established above: still aggregate counts only, no
+names/IDs/timestamps, computed via the same `DeploymentRepository.countByStatus` calls
+already used both here and by `DeploymentMetricsRegistry` (ADR-0021).

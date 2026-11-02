@@ -4,5 +4,9 @@ public record StatsResponse(
         long applicationCount,
         long environmentCount,
         long deploymentCount,
-        Double successRatePercent) {
+        Double successRatePercent,
+        long pendingCount,
+        long runningCount,
+        long successCount,
+        long failedCount) {
 }
