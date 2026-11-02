@@ -48,8 +48,9 @@ export function ApplicationsPage() {
           className="mb-8 flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-white p-4"
         >
           <div>
-            <label className="block text-xs font-medium text-gray-700">Name</label>
+            <label htmlFor="name" className="block text-xs font-medium text-gray-700">Name</label>
             <input
+              id="name"
               className="mt-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -57,8 +58,9 @@ export function ApplicationsPage() {
             />
           </div>
           <div className="flex-1">
-            <label className="block text-xs font-medium text-gray-700">Description</label>
+            <label htmlFor="description" className="block text-xs font-medium text-gray-700">Description</label>
             <input
+              id="description"
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm"
               value={description}
               onChange={(e) => setDescription(e.target.value)}

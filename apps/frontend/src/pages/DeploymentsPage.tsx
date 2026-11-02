@@ -81,8 +81,9 @@ export function DeploymentsPage() {
           className="mb-8 flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-white p-4"
         >
           <div>
-            <label className="block text-xs font-medium text-gray-700">Application</label>
+            <label htmlFor="applicationId" className="block text-xs font-medium text-gray-700">Application</label>
             <select
+              id="applicationId"
               className="mt-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
               value={applicationId}
               onChange={(e) => {
@@ -102,8 +103,9 @@ export function DeploymentsPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700">Environment</label>
+            <label htmlFor="environmentId" className="block text-xs font-medium text-gray-700">Environment</label>
             <select
+              id="environmentId"
               className="mt-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
               value={environmentId}
               onChange={(e) => setEnvironmentId(e.target.value)}
@@ -121,8 +123,9 @@ export function DeploymentsPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700">Version</label>
+            <label htmlFor="version" className="block text-xs font-medium text-gray-700">Version</label>
             <input
+              id="version"
               className="mt-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
               value={version}
               onChange={(e) => setVersion(e.target.value)}
