@@ -14,6 +14,9 @@ export function Nav() {
           <Link to="/applications" className="text-sm font-medium text-gray-700 hover:text-blue-600">
             Applications
           </Link>
+          <Link to="/deployments" className="text-sm font-medium text-gray-700 hover:text-blue-600">
+            Deployments
+          </Link>
         </div>
         <button onClick={logout} className="text-sm text-gray-500 hover:text-gray-700">
           Log out

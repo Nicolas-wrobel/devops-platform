@@ -29,8 +29,9 @@ export function LoginPage() {
         <h1 className="text-xl font-semibold text-gray-900">Sign in</h1>
         {error && <p className="text-sm text-red-600">{error}</p>}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Username</label>
+          <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
           <input
+            id="username"
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -38,8 +39,9 @@ export function LoginPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Password</label>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
           <input
+            id="password"
             type="password"
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
             value={password}

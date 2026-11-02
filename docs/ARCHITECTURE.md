@@ -15,7 +15,8 @@ Current, factual state of the stack — what exists today, not the roadmap
 | Database       | PostgreSQL 16                                             |
 | Infrastructure | Docker, Docker Compose, Git, Makefile, Bash scripts        |
 | Migrations     | Flyway (see [ADR-0006](DECISIONS/0006-adopt-flyway-with-first-module.md)) |
-| Observability  | Micrometer + Prometheus (see [ADR-0013](DECISIONS/0013-prometheus-metrics-scraping.md)) + Grafana (see [ADR-0015](DECISIONS/0015-grafana-for-metrics-visualization.md)); basic dashboard next |
+| Observability  | Micrometer + Prometheus (see [ADR-0013](DECISIONS/0013-prometheus-metrics-scraping.md)) + Grafana (see [ADR-0015](DECISIONS/0015-grafana-for-metrics-visualization.md)); basic RED/USE dashboard (see [ADR-0016](DECISIONS/0016-basic-technical-dashboard.md)) plus custom `Deployment` business metrics (see [ADR-0021](DECISIONS/0021-deployment-business-metrics.md)) |
+| Security       | Spring Security, JWT via OAuth2 Resource Server (see [ADR-0017](DECISIONS/0017-jwt-based-authentication-strategy.md)/[ADR-0018](DECISIONS/0018-jwt-implementation-resource-server-hs256-dual-chains.md)) |
 | Later          | Kubernetes, Helm                                          |
 
 Backend dependencies currently wired: `spring-boot-starter-webmvc`,
@@ -30,15 +31,21 @@ endpoint (see [ADR-0013](DECISIONS/0013-prometheus-metrics-scraping.md)),
 [ADR-0007](DECISIONS/0007-mapstruct-for-entity-dto-mapping.md)), the PostgreSQL
 driver, and `spring-boot-devtools` for local development.
 
-The first business module, `Environment` (full CRUD under `/api/environments`),
-is built and merged — package-by-feature under
-`com.devops_platform.backend.environment`, with cross-cutting exception handling
-in `com.devops_platform.backend.common`. See
+Three business modules are built and merged, all package-by-feature under
+`com.devops_platform.backend.*`, with cross-cutting exception handling in
+`com.devops_platform.backend.common`: `Environment` (full CRUD under
+`/api/environments`), `Application` (full CRUD under `/api/applications`,
+plus its `ApplicationEnvironment` link to `Environment`), and `Deployment`
+(`/api/deployments`, create + `/start` only — no `PUT`/`DELETE`, see
+[ADR-0020](DECISIONS/0020-deployment-status-model-and-scheduler.md)). See
 [ADR-0005](DECISIONS/0005-package-by-feature-for-business-modules.md) for the
 package layout convention and
 [ADR-0008](DECISIONS/0008-problemdetail-as-api-error-convention.md) for the API
-error convention — both are the pattern to follow for the next modules
-(`Application`, `Deployment`, ...).
+error convention. `Deployment` additionally introduces a `PENDING → RUNNING →
+SUCCESS|FAILED` state machine driven by a `@Scheduled` background job
+(`DeploymentCompletionScheduler`) and custom Micrometer business metrics
+(`DeploymentMetricsRegistry`) — see [ADR-0020](DECISIONS/0020-deployment-status-model-and-scheduler.md)
+and [ADR-0021](DECISIONS/0021-deployment-business-metrics.md).
 
 ------------------------------------------------------------------------
 
@@ -161,7 +168,20 @@ Completed:
 -   Grafana wired into the Compose stack, connected to Prometheus as a
     data source (added manually through the UI) — see
     [ADR-0015](DECISIONS/0015-grafana-for-metrics-visualization.md)
+-   Basic technical dashboard (RED + USE) built by hand in Grafana,
+    backed up to `infra/grafana/basic-technical.json` — see
+    [ADR-0016](DECISIONS/0016-basic-technical-dashboard.md)
+-   Security foundation — JWT authentication (OAuth2 Resource Server),
+    role-based authorization, CORS/security headers, CI dependency/
+    secret/container scanning — see [ADRs 0017-0019](DECISIONS/)
+-   Second business module: `Application` CRUD plus its
+    `ApplicationEnvironment` link to `Environment`, and a first usable
+    React frontend (react-router, axios, Tailwind CSS; login +
+    `Environment`/`Application` CRUD pages)
+-   Third business module: `Deployment` — state machine with a
+    `@Scheduled` completion job and custom Micrometer business metrics,
+    plus a `Deployments` React page — see [ADR-0020](DECISIONS/0020-deployment-status-model-and-scheduler.md)
+    and [ADR-0021](DECISIONS/0021-deployment-business-metrics.md)
 
-See [DEVELOPMENT.md](DEVELOPMENT.md) for day-to-day commands. Next up: a
-basic technical dashboard in Grafana, to close out the observability
-foundation (see the roadmap in [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).
+See [DEVELOPMENT.md](DEVELOPMENT.md) for day-to-day commands. Next up:
+Kubernetes (see the roadmap in [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).

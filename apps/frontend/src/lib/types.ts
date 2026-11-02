@@ -16,3 +16,20 @@ export interface ApplicationResponse {
   createdAt: string
   updatedAt: string
 }
+
+export type DeploymentStatus = 'PENDING' | 'RUNNING' | 'SUCCESS' | 'FAILED'
+
+export interface DeploymentResponse {
+  id: number
+  applicationId: number
+  applicationName: string
+  environmentId: number
+  environmentName: string
+  version: string
+  status: DeploymentStatus
+  triggeredBy: string
+  createdAt: string
+  startedAt: string | null
+  plannedFinishAt: string | null
+  finishedAt: string | null
+}
