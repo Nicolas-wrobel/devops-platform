@@ -94,6 +94,7 @@ export function DeploymentsPage() {
               <div>
                 <Label htmlFor="applicationId">Application</Label>
                 <Select
+                  items={Object.fromEntries(applications.map((app) => [String(app.id), app.name]))}
                   value={applicationId}
                   onValueChange={(value) => {
                     setApplicationId(value ?? '')
@@ -115,6 +116,7 @@ export function DeploymentsPage() {
               <div>
                 <Label htmlFor="environmentId">Environment</Label>
                 <Select
+                  items={Object.fromEntries(environments.map((env) => [String(env.id), env.name]))}
                   value={environmentId}
                   onValueChange={(value) => setEnvironmentId(value ?? '')}
                   disabled={!applicationId}

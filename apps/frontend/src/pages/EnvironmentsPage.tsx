@@ -16,6 +16,7 @@ import { api } from '../lib/api'
 import type { EnvironmentResponse, EnvironmentType } from '../lib/types'
 
 const ENVIRONMENT_TYPES: EnvironmentType[] = ['DEVELOPMENT', 'STAGING', 'PRODUCTION']
+const ENVIRONMENT_TYPE_ITEMS = Object.fromEntries(ENVIRONMENT_TYPES.map((t) => [t, t]))
 
 export function EnvironmentsPage() {
   const [environments, setEnvironments] = useState<EnvironmentResponse[]>([])
@@ -73,7 +74,11 @@ export function EnvironmentsPage() {
               </div>
               <div>
                 <Label htmlFor="type">Type</Label>
-                <Select value={type} onValueChange={(value) => setType(value as EnvironmentType)}>
+                <Select
+                  items={ENVIRONMENT_TYPE_ITEMS}
+                  value={type}
+                  onValueChange={(value) => setType(value as EnvironmentType)}
+                >
                   <SelectTrigger id="type" className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
