@@ -46,7 +46,7 @@ export function LandingPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-16">
+      <main className="mx-auto max-w-3xl px-4 py-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <h1 className="text-3xl font-semibold text-foreground">DevOps Platform</h1>
         <p className="mt-3 max-w-xl text-muted-foreground">
           A simulated internal deployment-tracking platform — a demo project built to showcase
