@@ -81,6 +81,7 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+    --gradient-strength: 16%;
 }
 
 .dark {
@@ -115,6 +116,7 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+    --gradient-strength: 26%;
 }
 
 @layer base {
@@ -123,6 +125,14 @@
     }
   body {
     @apply bg-background text-foreground;
+    /* Sitewide backdrop (same on every page) rather than a per-page
+       hero banner — anchored to the viewport (not the page content) so
+       it reads as a static background, not something that scrolls. */
+    background-image:
+      radial-gradient(ellipse 70% 60% at 10% -10%, color-mix(in oklch, var(--primary) var(--gradient-strength), transparent), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 110% 0%, color-mix(in oklch, var(--chart-2) var(--gradient-strength), transparent), transparent 55%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
     }
   html {
     @apply font-sans;
