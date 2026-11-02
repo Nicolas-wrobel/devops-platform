@@ -18,7 +18,7 @@ export function LoginPage() {
     setError(null)
     try {
       await login(username, password)
-      navigate('/environments')
+      navigate('/dashboard')
     } catch {
       setError('Invalid username or password')
     }

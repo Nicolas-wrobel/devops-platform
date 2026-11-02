@@ -4,6 +4,7 @@ import { Button } from './ui/button'
 import { ThemeToggle } from './ThemeToggle'
 
 const LINKS = [
+  { to: '/dashboard', label: 'Dashboard' },
   { to: '/environments', label: 'Environments' },
   { to: '/applications', label: 'Applications' },
   { to: '/deployments', label: 'Deployments' },

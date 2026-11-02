@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
 import { RequireAuth } from './auth/RequireAuth'
 import { ApplicationsPage } from './pages/ApplicationsPage'
+import { DashboardPage } from './pages/DashboardPage'
 import { DeploymentsPage } from './pages/DeploymentsPage'
 import { EnvironmentsPage } from './pages/EnvironmentsPage'
 import { LandingPage } from './pages/LandingPage'
@@ -13,6 +14,14 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <RequireAuth>
+              <DashboardPage />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/environments"
           element={
