@@ -1,8 +1,9 @@
-import { Workflow } from 'lucide-react'
+import { BookOpen, Code2, ExternalLink, Workflow } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DeploymentStatusChart } from '../components/DeploymentStatusChart'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { Badge } from '../components/ui/badge'
 import { buttonVariants } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
 import { Skeleton } from '../components/ui/skeleton'
@@ -15,6 +16,22 @@ const TRACKED_MODULES = [
   { title: 'Environments', description: 'Where each application runs — dev, staging, production.' },
   { title: 'Deployments', description: 'Status, version, and outcome of every deployment, over time.' },
 ]
+
+const TECH_STACK = [
+  'Spring Boot',
+  'Java 21',
+  'React 19',
+  'TypeScript',
+  'PostgreSQL',
+  'Docker',
+  'Flyway',
+  'Spring Security (JWT)',
+  'Prometheus',
+  'Grafana',
+  'GitHub Actions',
+]
+
+const REPO_URL = 'https://github.com/Nicolas-wrobel/devops-platform'
 
 export function LandingPage() {
   const { isAuthenticated } = useAuth()
@@ -101,6 +118,40 @@ export function LandingPage() {
               </li>
             ))}
           </ul>
+        </div>
+
+        <div className="mt-16">
+          <h2 className="text-lg font-semibold text-foreground">Built with</h2>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {TECH_STACK.map((tech) => (
+              <Badge key={tech} variant="secondary">
+                {tech}
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-16 flex flex-wrap gap-6">
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-primary"
+          >
+            <Code2 className="size-4" />
+            Source code
+            <ExternalLink className="size-3.5 text-muted-foreground" />
+          </a>
+          <a
+            href={`${REPO_URL}/blob/main/docs/ARCHITECTURE.md`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-primary"
+          >
+            <BookOpen className="size-4" />
+            Architecture docs
+            <ExternalLink className="size-3.5 text-muted-foreground" />
+          </a>
         </div>
       </main>
     </div>
