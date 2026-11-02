@@ -7,6 +7,7 @@ import com.devops_platform.backend.deployment.dto.DeploymentRequest;
 import com.devops_platform.backend.deployment.dto.DeploymentResponse;
 import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeploymentService {
 
     private final DeploymentRepository repository;
+    private final DeploymentMetricsRegistry deploymentMetricsRegistry;
     private final ApplicationEnvironmentRepository linkRepository;
     private final DeploymentMapper mapper;
     private final Clock clock;
@@ -29,6 +31,7 @@ public class DeploymentService {
 
     public DeploymentService(
             DeploymentRepository repository,
+            DeploymentMetricsRegistry deploymentMetricsRegistry,
             ApplicationEnvironmentRepository linkRepository,
             DeploymentMapper mapper,
             Clock clock,
@@ -37,6 +40,7 @@ public class DeploymentService {
             @Value("${deployment.simulation.max-duration-seconds:30}") int maxDurationSeconds,
             @Value("${deployment.simulation.success-probability:0.85}") double successProbability) {
         this.repository = repository;
+        this.deploymentMetricsRegistry = deploymentMetricsRegistry;
         this.linkRepository = linkRepository;
         this.mapper = mapper;
         this.clock = clock;
@@ -72,7 +76,10 @@ public class DeploymentService {
             DeploymentStatus finalStatus = random.nextDouble() < successProbability
                     ? DeploymentStatus.SUCCESS
                     : DeploymentStatus.FAILED;
-            deployment.complete(finalStatus, clock.instant());
+            Instant finishedAt = clock.instant();
+            deployment.complete(finalStatus, finishedAt);
+            Duration actualDuration = Duration.between(deployment.getStartedAt(), finishedAt);
+            deploymentMetricsRegistry.recordCompletion(finalStatus, actualDuration);
         }
     }
 

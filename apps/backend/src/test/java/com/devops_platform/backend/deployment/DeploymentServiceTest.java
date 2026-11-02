@@ -36,6 +36,9 @@ class DeploymentServiceTest {
     private DeploymentRepository repository;
 
     @Mock
+    private DeploymentMetricsRegistry metricsRegistry;
+
+    @Mock
     private ApplicationEnvironmentRepository linkRepository;
 
     @Mock
@@ -52,7 +55,7 @@ class DeploymentServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new DeploymentService(repository, linkRepository, mapper, fixedClock, random, 10, 30, 0.85);
+        service = new DeploymentService(repository, metricsRegistry, linkRepository, mapper, fixedClock, random, 10, 30, 0.85);
         Application application = new Application("checkout", null);
         Environment environment = new Environment("production", EnvironmentType.PRODUCTION, null);
         link = new ApplicationEnvironment(application, environment);
