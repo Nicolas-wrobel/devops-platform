@@ -39,6 +39,7 @@ jobs:
           cache-dependency-path: apps/frontend/package-lock.json
       - run: npm ci
       - run: npm run lint
+      - run: npm run test
       - run: npm run build
       # --omit=dev: only what actually ships to the browser. Vite/rollup/etc.
       # (devDependencies) generate a lot of build-tooling-only advisory noise
