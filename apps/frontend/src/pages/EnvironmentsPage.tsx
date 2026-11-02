@@ -26,6 +26,8 @@ export function EnvironmentsPage() {
   const [description, setDescription] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [search, setSearch] = useState('')
+  const [selectedId, setSelectedId] = useState<number | null>(null)
 
   useEffect(() => {
     let ignore = false
@@ -53,6 +55,10 @@ export function EnvironmentsPage() {
       setError('Could not create environment (name may already exist)')
     }
   }
+
+  const filteredEnvironments = environments.filter((env) =>
+    env.name.toLowerCase().includes(search.toLowerCase()),
+  )
 
   return (
     <div className="min-h-screen">
@@ -111,18 +117,44 @@ export function EnvironmentsPage() {
 
         {error && <p className="mb-4 text-sm text-destructive">{error}</p>}
 
-        <ul className="divide-y divide-border rounded-lg border border-border bg-card">
-          {environments.map((env) => (
-            <li key={env.id} className="flex items-center justify-between px-4 py-3">
-              <div>
-                <p className="text-sm font-medium text-foreground">{env.name}</p>
-                <p className="text-xs text-muted-foreground">{env.description ?? 'No description'}</p>
+        <Input
+          type="search"
+          placeholder="Search environments..."
+          className="mb-4"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <ul key={search} className="animate-in fade-in divide-y divide-border rounded-lg border border-border bg-card duration-200">
+          {filteredEnvironments.map((env) => (
+            <li
+              key={env.id}
+              onClick={() => setSelectedId(selectedId === env.id ? null : env.id)}
+              className={
+                selectedId === env.id
+                  ? 'cursor-pointer px-4 py-3 ring-2 ring-inset ring-primary transition-colors'
+                  : 'cursor-pointer px-4 py-3 transition-colors hover:bg-accent/50'
+              }
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{env.name}</p>
+                  <p className="text-xs text-muted-foreground">{env.description ?? 'No description'}</p>
+                </div>
+                <Badge variant="secondary">{env.type}</Badge>
               </div>
-              <Badge variant="secondary">{env.type}</Badge>
+              {selectedId === env.id && (
+                <div className="animate-in fade-in mt-2 flex gap-4 text-xs text-muted-foreground duration-200">
+                  <span>Created {new Date(env.createdAt).toLocaleString()}</span>
+                  <span>Updated {new Date(env.updatedAt).toLocaleString()}</span>
+                </div>
+              )}
             </li>
           ))}
-          {environments.length === 0 && (
-            <li className="px-4 py-6 text-center text-sm text-muted-foreground">No environments yet.</li>
+          {filteredEnvironments.length === 0 && (
+            <li className="px-4 py-6 text-center text-sm text-muted-foreground">
+              {environments.length === 0 ? 'No environments yet.' : 'No environments match your search.'}
+            </li>
           )}
         </ul>
       </main>
