@@ -1,5 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Nav } from '../components/Nav'
+import { Button } from '../components/ui/button'
+import { Card, CardContent } from '../components/ui/card'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
 import { api } from '../lib/api'
 import type { ApplicationResponse } from '../lib/types'
 
@@ -38,53 +42,49 @@ export function ApplicationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Nav />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-semibold text-gray-900">Applications</h1>
+        <h1 className="mb-6 text-2xl font-semibold text-foreground">Applications</h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="mb-8 flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-white p-4"
-        >
-          <div>
-            <label htmlFor="name" className="block text-xs font-medium text-gray-700">Name</label>
-            <input
-              id="name"
-              className="mt-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="flex-1">
-            <label htmlFor="description" className="block text-xs font-medium text-gray-700">Description</label>
-            <input
-              id="description"
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-          <button
-            type="submit"
-            className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            Add
-          </button>
-        </form>
+        <Card className="mb-8">
+          <CardContent>
+            <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
+              <div>
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  className="mt-1"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex-1">
+                <Label htmlFor="description">Description</Label>
+                <Input
+                  id="description"
+                  className="mt-1 w-full"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
+              <Button type="submit">Add</Button>
+            </form>
+          </CardContent>
+        </Card>
 
-        {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+        {error && <p className="mb-4 text-sm text-destructive">{error}</p>}
 
-        <ul className="divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white">
+        <ul className="divide-y divide-border rounded-lg border border-border bg-card">
           {applications.map((app) => (
             <li key={app.id} className="px-4 py-3">
-              <p className="text-sm font-medium text-gray-900">{app.name}</p>
-              <p className="text-xs text-gray-500">{app.description ?? 'No description'}</p>
+              <p className="text-sm font-medium text-foreground">{app.name}</p>
+              <p className="text-xs text-muted-foreground">{app.description ?? 'No description'}</p>
             </li>
           ))}
           {applications.length === 0 && (
-            <li className="px-4 py-6 text-center text-sm text-gray-500">No applications yet.</li>
+            <li className="px-4 py-6 text-center text-sm text-muted-foreground">No applications yet.</li>
           )}
         </ul>
       </main>
