@@ -1,5 +1,17 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { DeploymentStatusBadge } from '../components/DeploymentStatusBadge'
 import { Nav } from '../components/Nav'
+import { Button } from '../components/ui/button'
+import { Card, CardContent } from '../components/ui/card'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select'
 import { api } from '../lib/api'
 import type { ApplicationResponse, DeploymentResponse, EnvironmentResponse } from '../lib/types'
 
@@ -71,101 +83,93 @@ export function DeploymentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Nav />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-semibold text-gray-900">Deployments</h1>
+        <h1 className="mb-6 text-2xl font-semibold text-foreground">Deployments</h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="mb-8 flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-white p-4"
-        >
-          <div>
-            <label htmlFor="applicationId" className="block text-xs font-medium text-gray-700">Application</label>
-            <select
-              id="applicationId"
-              className="mt-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
-              value={applicationId}
-              onChange={(e) => {
-                setApplicationId(e.target.value)
-                setEnvironmentId('')
-              }}
-              required
-            >
-              <option value="" disabled>
-                Select application
-              </option>
-              {applications.map((app) => (
-                <option key={app.id} value={app.id}>
-                  {app.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="environmentId" className="block text-xs font-medium text-gray-700">Environment</label>
-            <select
-              id="environmentId"
-              className="mt-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
-              value={environmentId}
-              onChange={(e) => setEnvironmentId(e.target.value)}
-              required
-              disabled={!applicationId}
-            >
-              <option value="" disabled>
-                Select environment
-              </option>
-              {environments.map((env) => (
-                <option key={env.id} value={env.id}>
-                  {env.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="version" className="block text-xs font-medium text-gray-700">Version</label>
-            <input
-              id="version"
-              className="mt-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
-              value={version}
-              onChange={(e) => setVersion(e.target.value)}
-              placeholder="1.4.2"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            Create
-          </button>
-        </form>
+        <Card className="mb-8">
+          <CardContent>
+            <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
+              <div>
+                <Label htmlFor="applicationId">Application</Label>
+                <Select
+                  value={applicationId}
+                  onValueChange={(value) => {
+                    setApplicationId(value ?? '')
+                    setEnvironmentId('')
+                  }}
+                >
+                  <SelectTrigger id="applicationId" className="mt-1">
+                    <SelectValue placeholder="Select application" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {applications.map((app) => (
+                      <SelectItem key={app.id} value={String(app.id)}>
+                        {app.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="environmentId">Environment</Label>
+                <Select
+                  value={environmentId}
+                  onValueChange={(value) => setEnvironmentId(value ?? '')}
+                  disabled={!applicationId}
+                >
+                  <SelectTrigger id="environmentId" className="mt-1">
+                    <SelectValue placeholder="Select environment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {environments.map((env) => (
+                      <SelectItem key={env.id} value={String(env.id)}>
+                        {env.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="version">Version</Label>
+                <Input
+                  id="version"
+                  className="mt-1"
+                  value={version}
+                  onChange={(e) => setVersion(e.target.value)}
+                  placeholder="1.4.2"
+                  required
+                />
+              </div>
+              <Button type="submit">Create</Button>
+            </form>
+          </CardContent>
+        </Card>
 
-        {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+        {error && <p className="mb-4 text-sm text-destructive">{error}</p>}
 
-        <ul className="divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white">
+        <ul className="divide-y divide-border rounded-lg border border-border bg-card">
           {deployments.map((deployment) => (
             <li key={deployment.id} className="flex items-center justify-between px-4 py-3">
               <div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-foreground">
                   {deployment.applicationName} &rarr; {deployment.environmentName} ({deployment.version})
                 </p>
-                <p className="text-xs text-gray-500">
-                  {deployment.status} &middot; triggered by {deployment.triggeredBy}
-                </p>
+                <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                  <DeploymentStatusBadge status={deployment.status} />
+                  <span>triggered by {deployment.triggeredBy}</span>
+                </div>
               </div>
               {deployment.status === 'PENDING' && (
-                <button
-                  onClick={() => handleStart(deployment.id)}
-                  className="rounded-md bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700"
-                >
+                <Button size="sm" onClick={() => handleStart(deployment.id)}>
                   Start
-                </button>
+                </Button>
               )}
             </li>
           ))}
           {deployments.length === 0 && (
-            <li className="px-4 py-6 text-center text-sm text-gray-500">No deployments yet.</li>
+            <li className="px-4 py-6 text-center text-sm text-muted-foreground">No deployments yet.</li>
           )}
         </ul>
       </main>
