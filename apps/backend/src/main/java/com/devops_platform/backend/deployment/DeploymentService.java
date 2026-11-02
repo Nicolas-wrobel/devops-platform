@@ -66,6 +66,16 @@ public class DeploymentService {
         return mapper.toResponse(deployment);
     }
 
+    public void completeDueDeployments() {
+        List<Deployment> due = repository.findByStatusAndPlannedFinishAtBefore(DeploymentStatus.RUNNING, clock.instant());
+        for (Deployment deployment : due) {
+            DeploymentStatus finalStatus = random.nextDouble() < successProbability
+                    ? DeploymentStatus.SUCCESS
+                    : DeploymentStatus.FAILED;
+            deployment.complete(finalStatus, clock.instant());
+        }
+    }
+
     @Transactional(readOnly = true)
     public List<DeploymentResponse> findAll(Long applicationId, Long environmentId) {
         Sort byCreatedAtDesc = Sort.by("createdAt").descending();

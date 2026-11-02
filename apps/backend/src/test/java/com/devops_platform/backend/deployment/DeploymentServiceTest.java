@@ -123,6 +123,33 @@ class DeploymentServiceTest {
     }
 
     @Test
+    void completeDueDeployments_transitionsToSuccess_whenRandomDrawIsBelowSuccessProbability() {
+        Deployment running = new Deployment(link, "1.0.0", "alice");
+        running.start(fixedClock.instant().minusSeconds(60), java.time.Duration.ofSeconds(10));
+        when(repository.findByStatusAndPlannedFinishAtBefore(DeploymentStatus.RUNNING, fixedClock.instant()))
+                .thenReturn(List.of(running));
+        when(random.nextDouble()).thenReturn(0.5);
+
+        service.completeDueDeployments();
+
+        assertThat(running.getStatus()).isEqualTo(DeploymentStatus.SUCCESS);
+        assertThat(running.getFinishedAt()).isEqualTo(fixedClock.instant());
+    }
+
+    @Test
+    void completeDueDeployments_transitionsToFailed_whenRandomDrawIsAboveSuccessProbability() {
+        Deployment running = new Deployment(link, "1.0.0", "alice");
+        running.start(fixedClock.instant().minusSeconds(60), java.time.Duration.ofSeconds(10));
+        when(repository.findByStatusAndPlannedFinishAtBefore(DeploymentStatus.RUNNING, fixedClock.instant()))
+                .thenReturn(List.of(running));
+        when(random.nextDouble()).thenReturn(0.99);
+
+        service.completeDueDeployments();
+
+        assertThat(running.getStatus()).isEqualTo(DeploymentStatus.FAILED);
+    }
+
+    @Test
     void findById_throwsNotFound_whenMissing() {
         when(repository.findById(99L)).thenReturn(Optional.empty());
 
