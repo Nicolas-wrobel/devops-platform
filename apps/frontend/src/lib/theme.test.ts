@@ -1,5 +1,6 @@
+import { act, renderHook } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
-import { applyTheme, getStoredTheme, setTheme } from './theme'
+import { applyTheme, getStoredTheme, setTheme, useIsDarkMode } from './theme'
 
 describe('theme', () => {
   afterEach(() => {
@@ -24,5 +25,16 @@ describe('theme', () => {
     applyTheme('light')
 
     expect(document.documentElement.classList.contains('dark')).toBe(false)
+  })
+
+  it('useIsDarkMode reflects changes to the .dark class on <html>', async () => {
+    const { result } = renderHook(() => useIsDarkMode())
+    expect(result.current).toBe(false)
+
+    await act(async () => {
+      document.documentElement.classList.add('dark')
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+    expect(result.current).toBe(true)
   })
 })
