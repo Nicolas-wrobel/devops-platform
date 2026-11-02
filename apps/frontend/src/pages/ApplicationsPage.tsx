@@ -14,6 +14,8 @@ export function ApplicationsPage() {
   const [description, setDescription] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [search, setSearch] = useState('')
+  const [selectedId, setSelectedId] = useState<number | null>(null)
 
   useEffect(() => {
     let ignore = false
@@ -41,6 +43,10 @@ export function ApplicationsPage() {
       setError('Could not create application (name may already exist)')
     }
   }
+
+  const filteredApplications = applications.filter((app) =>
+    app.name.toLowerCase().includes(search.toLowerCase()),
+  )
 
   return (
     <div className="min-h-screen">
@@ -80,15 +86,39 @@ export function ApplicationsPage() {
 
         {error && <p className="mb-4 text-sm text-destructive">{error}</p>}
 
-        <ul className="divide-y divide-border rounded-lg border border-border bg-card">
-          {applications.map((app) => (
-            <li key={app.id} className="px-4 py-3">
+        <Input
+          type="search"
+          placeholder="Search applications..."
+          className="mb-4"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <ul key={search} className="animate-in fade-in divide-y divide-border rounded-lg border border-border bg-card duration-200">
+          {filteredApplications.map((app) => (
+            <li
+              key={app.id}
+              onClick={() => setSelectedId(selectedId === app.id ? null : app.id)}
+              className={
+                selectedId === app.id
+                  ? 'cursor-pointer px-4 py-3 ring-2 ring-inset ring-primary transition-colors'
+                  : 'cursor-pointer px-4 py-3 transition-colors hover:bg-accent/50'
+              }
+            >
               <p className="text-sm font-medium text-foreground">{app.name}</p>
               <p className="text-xs text-muted-foreground">{app.description ?? 'No description'}</p>
+              {selectedId === app.id && (
+                <div className="animate-in fade-in mt-2 flex gap-4 text-xs text-muted-foreground duration-200">
+                  <span>Created {new Date(app.createdAt).toLocaleString()}</span>
+                  <span>Updated {new Date(app.updatedAt).toLocaleString()}</span>
+                </div>
+              )}
             </li>
           ))}
-          {applications.length === 0 && (
-            <li className="px-4 py-6 text-center text-sm text-muted-foreground">No applications yet.</li>
+          {filteredApplications.length === 0 && (
+            <li className="px-4 py-6 text-center text-sm text-muted-foreground">
+              {applications.length === 0 ? 'No applications yet.' : 'No applications match your search.'}
+            </li>
           )}
         </ul>
       </main>
