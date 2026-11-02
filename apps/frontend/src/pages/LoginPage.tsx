@@ -1,6 +1,10 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
+import { Button } from '../components/ui/button'
+import { Card, CardContent } from '../components/ui/card'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
 
 export function LoginPage() {
   const [username, setUsername] = useState('')
@@ -21,41 +25,39 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 rounded-lg border border-gray-200 bg-white p-8 shadow-sm"
-      >
-        <h1 className="text-xl font-semibold text-gray-900">Sign in</h1>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
-          <input
-            id="username"
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-          <input
-            id="password"
-            type="password"
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-        >
-          Sign in
-        </button>
-      </form>
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <Card className="w-full max-w-sm">
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <h1 className="text-xl font-semibold text-foreground">Sign in</h1>
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            <div>
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                className="mt-1 w-full"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                className="mt-1 w-full"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full">
+              Sign in
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   )
 }
