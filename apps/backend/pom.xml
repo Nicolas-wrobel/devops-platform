@@ -20,6 +20,12 @@
 		     (auth bypass / access control) fixed in 11.0.25 — override until a
 		     Boot patch bumps this itself. -->
 		<tomcat.version>11.0.25</tomcat.version>
+		<!-- Boot 4.0.8's managed Jackson 2.x/3.x both have HIGH DoS CVEs
+		     (unbounded regex/StringBuilder/numeric-parsing/cache growth) fixed
+		     in these patch releases — override until a Boot patch bumps them
+		     itself. -->
+		<jackson-2-bom.version>2.21.7</jackson-2-bom.version>
+		<jackson-bom.version>3.1.7</jackson-bom.version>
 	</properties>
 	<dependencies>
 		<dependency>
