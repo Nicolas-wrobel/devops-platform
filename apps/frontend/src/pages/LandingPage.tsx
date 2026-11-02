@@ -46,39 +46,45 @@ export function LandingPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <h1 className="text-3xl font-semibold text-foreground">DevOps Platform</h1>
-        <p className="mt-3 max-w-xl text-muted-foreground">
-          A simulated internal deployment-tracking platform — a demo project built to showcase
-          full-stack and DevOps engineering practices, from CI/CD and containerization to
-          observability and security.
-        </p>
-        <Link to={isAuthenticated ? '/dashboard' : '/login'} className={buttonVariants({ className: 'mt-6' })}>
-          {isAuthenticated ? 'Go to dashboard' : 'Sign in'}
-        </Link>
+      <div className="relative isolate overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(ellipse_60%_50%_at_30%_0%,_var(--primary),_transparent)] opacity-[0.08] dark:opacity-[0.14]"
+        />
+        <main className="mx-auto max-w-3xl px-4 py-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <h1 className="text-3xl font-semibold text-foreground">DevOps Platform</h1>
+          <p className="mt-3 max-w-xl text-muted-foreground">
+            A simulated internal deployment-tracking platform — a demo project built to showcase
+            full-stack and DevOps engineering practices, from CI/CD and containerization to
+            observability and security.
+          </p>
+          <Link to={isAuthenticated ? '/dashboard' : '/login'} className={buttonVariants({ className: 'mt-6' })}>
+            {isAuthenticated ? 'Go to dashboard' : 'Sign in'}
+          </Link>
 
-        <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <StatCard label="Applications" value={stats?.applicationCount} />
-          <StatCard label="Environments" value={stats?.environmentCount} />
-          <StatCard label="Deployments" value={stats?.deploymentCount} />
-          <StatCard
-            label="Success rate"
-            value={stats && stats.successRatePercent !== null ? `${stats.successRatePercent.toFixed(0)}%` : stats ? '—' : undefined}
-          />
-        </div>
+          <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <StatCard label="Applications" value={stats?.applicationCount} />
+            <StatCard label="Environments" value={stats?.environmentCount} />
+            <StatCard label="Deployments" value={stats?.deploymentCount} />
+            <StatCard
+              label="Success rate"
+              value={stats && stats.successRatePercent !== null ? `${stats.successRatePercent.toFixed(0)}%` : stats ? '—' : undefined}
+            />
+          </div>
 
-        <div className="mt-16">
-          <h2 className="text-lg font-semibold text-foreground">What it tracks</h2>
-          <ul className="mt-4 space-y-4">
-            {TRACKED_MODULES.map((module) => (
-              <li key={module.title}>
-                <p className="text-sm font-medium text-foreground">{module.title}</p>
-                <p className="text-sm text-muted-foreground">{module.description}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </main>
+          <div className="mt-16">
+            <h2 className="text-lg font-semibold text-foreground">What it tracks</h2>
+            <ul className="mt-4 space-y-4">
+              {TRACKED_MODULES.map((module) => (
+                <li key={module.title}>
+                  <p className="text-sm font-medium text-foreground">{module.title}</p>
+                  <p className="text-sm text-muted-foreground">{module.description}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </main>
+      </div>
     </div>
   )
 }
