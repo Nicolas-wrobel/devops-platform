@@ -1,13 +1,14 @@
+import { AppWindow, LayoutDashboard, Rocket, Server } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { Button } from './ui/button'
 import { ThemeToggle } from './ThemeToggle'
 
 const LINKS = [
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/environments', label: 'Environments' },
-  { to: '/applications', label: 'Applications' },
-  { to: '/deployments', label: 'Deployments' },
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/environments', label: 'Environments', icon: Server },
+  { to: '/applications', label: 'Applications', icon: AppWindow },
+  { to: '/deployments', label: 'Deployments', icon: Rocket },
 ]
 
 export function Nav() {
@@ -24,10 +25,11 @@ export function Nav() {
               to={link.to}
               className={
                 location.pathname === link.to
-                  ? 'text-sm font-medium text-foreground'
-                  : 'text-sm font-medium text-muted-foreground hover:text-foreground'
+                  ? 'flex items-center gap-1.5 text-sm font-medium text-foreground'
+                  : 'flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground'
               }
             >
+              <link.icon className="size-4" />
               {link.label}
             </Link>
           ))}

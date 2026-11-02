@@ -1,3 +1,4 @@
+import { Workflow } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ThemeToggle } from '../components/ThemeToggle'
@@ -41,7 +42,10 @@ export function LandingPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border px-4 py-3">
         <div className="mx-auto flex max-w-3xl items-center justify-between">
-          <span className="text-sm font-medium text-foreground">DevOps Platform</span>
+          <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+            <Workflow className="size-4" />
+            DevOps Platform
+          </span>
           <ThemeToggle />
         </div>
       </header>
@@ -52,7 +56,10 @@ export function LandingPage() {
           className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(ellipse_60%_50%_at_30%_0%,_var(--primary),_transparent)] opacity-[0.08] dark:opacity-[0.14]"
         />
         <main className="mx-auto max-w-3xl px-4 py-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <h1 className="text-3xl font-semibold text-foreground">DevOps Platform</h1>
+          <h1 className="flex items-center gap-3 text-3xl font-semibold text-foreground">
+            <Workflow className="size-8" />
+            DevOps Platform
+          </h1>
           <p className="mt-3 max-w-xl text-muted-foreground">
             A simulated internal deployment-tracking platform — a demo project built to showcase
             full-stack and DevOps engineering practices, from CI/CD and containerization to

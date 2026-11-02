@@ -1,3 +1,4 @@
+import { Server } from 'lucide-react'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Nav } from '../components/Nav'
 import { Badge } from '../components/ui/badge'
@@ -57,7 +58,10 @@ export function EnvironmentsPage() {
     <div className="min-h-screen bg-background">
       <Nav />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-semibold text-foreground">Environments</h1>
+        <h1 className="mb-6 flex items-center gap-2 text-2xl font-semibold text-foreground">
+          <Server className="size-6" />
+          Environments
+        </h1>
 
         <Card className="mb-8">
           <CardContent>

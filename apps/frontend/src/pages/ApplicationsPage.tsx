@@ -1,3 +1,4 @@
+import { AppWindow } from 'lucide-react'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Nav } from '../components/Nav'
 import { Button } from '../components/ui/button'
@@ -45,7 +46,10 @@ export function ApplicationsPage() {
     <div className="min-h-screen bg-background">
       <Nav />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-semibold text-foreground">Applications</h1>
+        <h1 className="mb-6 flex items-center gap-2 text-2xl font-semibold text-foreground">
+          <AppWindow className="size-6" />
+          Applications
+        </h1>
 
         <Card className="mb-8">
           <CardContent>

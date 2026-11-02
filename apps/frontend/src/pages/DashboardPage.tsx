@@ -1,3 +1,4 @@
+import { LayoutDashboard } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { DeploymentStatusBadge } from '../components/DeploymentStatusBadge'
@@ -47,7 +48,10 @@ export function DashboardPage() {
     <div className="min-h-screen bg-background">
       <Nav />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-semibold text-foreground">Dashboard</h1>
+        <h1 className="mb-6 flex items-center gap-2 text-2xl font-semibold text-foreground">
+          <LayoutDashboard className="size-6" />
+          Dashboard
+        </h1>
 
         <div className="mb-8 grid grid-cols-3 gap-4">
           <SummaryCard label="Environments" value={environments.length} />

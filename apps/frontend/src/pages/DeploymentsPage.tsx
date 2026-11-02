@@ -1,3 +1,4 @@
+import { Rocket } from 'lucide-react'
 import { useEffect, useState, type FormEvent } from 'react'
 import { DeploymentStatusBadge } from '../components/DeploymentStatusBadge'
 import { Nav } from '../components/Nav'
@@ -86,7 +87,10 @@ export function DeploymentsPage() {
     <div className="min-h-screen bg-background">
       <Nav />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-semibold text-foreground">Deployments</h1>
+        <h1 className="mb-6 flex items-center gap-2 text-2xl font-semibold text-foreground">
+          <Rocket className="size-6" />
+          Deployments
+        </h1>
 
         <Card className="mb-8">
           <CardContent>

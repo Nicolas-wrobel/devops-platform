@@ -1,3 +1,4 @@
+import { Workflow } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
@@ -29,7 +30,8 @@ export function LoginPage() {
     <div className="flex min-h-screen flex-col bg-background">
       <header className="border-b border-border px-4 py-3">
         <div className="mx-auto flex max-w-3xl items-center justify-between">
-          <Link to="/" className="text-sm font-medium text-foreground">
+          <Link to="/" className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+            <Workflow className="size-4" />
             DevOps Platform
           </Link>
           <ThemeToggle />
