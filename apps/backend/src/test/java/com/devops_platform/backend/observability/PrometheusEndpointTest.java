@@ -38,5 +38,5 @@ class PrometheusEndpointTest {
         mockMvc.perform(get("/actuator/prometheus"))
                 .andExpect(status().isUnauthorized());
     }
-    
+
 }

@@ -33,3 +33,14 @@ export interface DeploymentResponse {
   plannedFinishAt: string | null
   finishedAt: string | null
 }
+
+export interface StatsResponse {
+  applicationCount: number
+  environmentCount: number
+  deploymentCount: number
+  successRatePercent: number | null
+  pendingCount: number
+  runningCount: number
+  successCount: number
+  failedCount: number
+}

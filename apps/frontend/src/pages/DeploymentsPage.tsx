@@ -1,5 +1,19 @@
+import { Rocket } from 'lucide-react'
 import { useEffect, useState, type FormEvent } from 'react'
+import { DeploymentStatusBadge } from '../components/DeploymentStatusBadge'
 import { Nav } from '../components/Nav'
+import { Badge } from '../components/ui/badge'
+import { Button } from '../components/ui/button'
+import { Card, CardContent } from '../components/ui/card'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select'
 import { api } from '../lib/api'
 import type { ApplicationResponse, DeploymentResponse, EnvironmentResponse } from '../lib/types'
 
@@ -12,6 +26,9 @@ export function DeploymentsPage() {
   const [version, setVersion] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [search, setSearch] = useState('')
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [filterApplicationIds, setFilterApplicationIds] = useState<Set<number>>(new Set())
 
   useEffect(() => {
     let ignore = false
@@ -70,102 +87,179 @@ export function DeploymentsPage() {
     }
   }
 
+  function toggleFilterApplication(id: number) {
+    setFilterApplicationIds((current) => {
+      const next = new Set(current)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
+    })
+  }
+
+  const filteredDeployments = deployments.filter((d) => {
+    const haystack = `${d.applicationName} ${d.environmentName} ${d.version}`.toLowerCase()
+    const matchesSearch = haystack.includes(search.toLowerCase())
+    const matchesApplicationFilter = filterApplicationIds.size === 0 || filterApplicationIds.has(d.applicationId)
+    return matchesSearch && matchesApplicationFilter
+  })
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Nav />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-semibold text-gray-900">Deployments</h1>
+        <h1 className="mb-6 flex items-center gap-2 text-2xl font-semibold text-foreground">
+          <Rocket className="size-6" />
+          Deployments
+        </h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="mb-8 flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-white p-4"
-        >
-          <div>
-            <label htmlFor="applicationId" className="block text-xs font-medium text-gray-700">Application</label>
-            <select
-              id="applicationId"
-              className="mt-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
-              value={applicationId}
-              onChange={(e) => {
-                setApplicationId(e.target.value)
-                setEnvironmentId('')
-              }}
-              required
-            >
-              <option value="" disabled>
-                Select application
-              </option>
-              {applications.map((app) => (
-                <option key={app.id} value={app.id}>
-                  {app.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="environmentId" className="block text-xs font-medium text-gray-700">Environment</label>
-            <select
-              id="environmentId"
-              className="mt-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
-              value={environmentId}
-              onChange={(e) => setEnvironmentId(e.target.value)}
-              required
-              disabled={!applicationId}
-            >
-              <option value="" disabled>
-                Select environment
-              </option>
-              {environments.map((env) => (
-                <option key={env.id} value={env.id}>
-                  {env.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="version" className="block text-xs font-medium text-gray-700">Version</label>
-            <input
-              id="version"
-              className="mt-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
-              value={version}
-              onChange={(e) => setVersion(e.target.value)}
-              placeholder="1.4.2"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            Create
-          </button>
-        </form>
-
-        {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
-
-        <ul className="divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white">
-          {deployments.map((deployment) => (
-            <li key={deployment.id} className="flex items-center justify-between px-4 py-3">
+        <Card className="mb-8">
+          <CardContent>
+            <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
               <div>
-                <p className="text-sm font-medium text-gray-900">
-                  {deployment.applicationName} &rarr; {deployment.environmentName} ({deployment.version})
-                </p>
-                <p className="text-xs text-gray-500">
-                  {deployment.status} &middot; triggered by {deployment.triggeredBy}
-                </p>
-              </div>
-              {deployment.status === 'PENDING' && (
-                <button
-                  onClick={() => handleStart(deployment.id)}
-                  className="rounded-md bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700"
+                <Label htmlFor="applicationId">Application</Label>
+                <Select
+                  items={Object.fromEntries(applications.map((app) => [String(app.id), app.name]))}
+                  value={applicationId}
+                  onValueChange={(value) => {
+                    setApplicationId(value ?? '')
+                    setEnvironmentId('')
+                  }}
                 >
-                  Start
-                </button>
+                  <SelectTrigger id="applicationId" className="mt-1">
+                    <SelectValue placeholder="Select application" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {applications.map((app) => (
+                      <SelectItem key={app.id} value={String(app.id)}>
+                        {app.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="environmentId">Environment</Label>
+                <Select
+                  items={Object.fromEntries(environments.map((env) => [String(env.id), env.name]))}
+                  value={environmentId}
+                  onValueChange={(value) => setEnvironmentId(value ?? '')}
+                  disabled={!applicationId}
+                >
+                  <SelectTrigger id="environmentId" className="mt-1">
+                    <SelectValue placeholder="Select environment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {environments.map((env) => (
+                      <SelectItem key={env.id} value={String(env.id)}>
+                        {env.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="version">Version</Label>
+                <Input
+                  id="version"
+                  className="mt-1"
+                  value={version}
+                  onChange={(e) => setVersion(e.target.value)}
+                  placeholder="1.4.2"
+                  required
+                />
+              </div>
+              <Button type="submit">Create</Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {error && <p className="mb-4 text-sm text-destructive">{error}</p>}
+
+        <Input
+          type="search"
+          placeholder="Search deployments..."
+          className="mb-4"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        {applications.length > 0 && (
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <span className="text-xs text-muted-foreground">Filter by application:</span>
+            {applications.map((app) => (
+              <Badge
+                key={app.id}
+                variant={filterApplicationIds.has(app.id) ? 'default' : 'outline'}
+                className="cursor-pointer select-none transition-colors"
+                onClick={() => toggleFilterApplication(app.id)}
+              >
+                {app.name}
+              </Badge>
+            ))}
+            {filterApplicationIds.size > 0 && (
+              <button
+                type="button"
+                onClick={() => setFilterApplicationIds(new Set())}
+                className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        )}
+
+        <ul key={`${search}-${[...filterApplicationIds].join(',')}`} className="animate-in fade-in divide-y divide-border rounded-lg border border-border bg-card duration-200">
+          {filteredDeployments.map((deployment) => (
+            <li
+              key={deployment.id}
+              onClick={() => setSelectedId(selectedId === deployment.id ? null : deployment.id)}
+              className={
+                selectedId === deployment.id
+                  ? 'cursor-pointer px-4 py-3 ring-2 ring-inset ring-primary transition-colors'
+                  : 'cursor-pointer px-4 py-3 transition-colors hover:bg-accent/50'
+              }
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    {deployment.applicationName} &rarr; {deployment.environmentName} ({deployment.version})
+                  </p>
+                  <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                    <DeploymentStatusBadge status={deployment.status} />
+                    <span>triggered by {deployment.triggeredBy}</span>
+                  </div>
+                </div>
+                {deployment.status === 'PENDING' && (
+                  <Button
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleStart(deployment.id)
+                    }}
+                  >
+                    Start
+                  </Button>
+                )}
+              </div>
+              {selectedId === deployment.id && (
+                <div className="animate-in fade-in mt-2 flex flex-wrap gap-4 text-xs text-muted-foreground duration-200">
+                  <span>Started {deployment.startedAt ? new Date(deployment.startedAt).toLocaleString() : '—'}</span>
+                  <span>
+                    Planned finish{' '}
+                    {deployment.plannedFinishAt ? new Date(deployment.plannedFinishAt).toLocaleString() : '—'}
+                  </span>
+                  <span>Finished {deployment.finishedAt ? new Date(deployment.finishedAt).toLocaleString() : '—'}</span>
+                </div>
               )}
             </li>
           ))}
-          {deployments.length === 0 && (
-            <li className="px-4 py-6 text-center text-sm text-gray-500">No deployments yet.</li>
+          {filteredDeployments.length === 0 && (
+            <li className="px-4 py-6 text-center text-sm text-muted-foreground">
+              {deployments.length === 0 ? 'No deployments yet.' : 'No deployments match your filters.'}
+            </li>
           )}
         </ul>
       </main>

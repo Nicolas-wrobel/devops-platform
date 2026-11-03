@@ -11,7 +11,7 @@ Current, factual state of the stack — what exists today, not the roadmap
 | Layer          | Technology                                              |
 |----------------|----------------------------------------------------------|
 | Backend        | Spring Boot (parent `spring-boot-starter-parent:4.0.2`), Java 21, Maven |
-| Frontend       | React 19, TypeScript, Vite                                |
+| Frontend       | React 19, TypeScript, Vite, Tailwind CSS v4, shadcn/ui (Base UI primitives), Vitest + React Testing Library (see [ADR-0023](DECISIONS/0023-frontend-design-system-and-testing.md)) |
 | Database       | PostgreSQL 16                                             |
 | Infrastructure | Docker, Docker Compose, Git, Makefile, Bash scripts        |
 | Migrations     | Flyway (see [ADR-0006](DECISIONS/0006-adopt-flyway-with-first-module.md)) |
@@ -182,6 +182,14 @@ Completed:
     `@Scheduled` completion job and custom Micrometer business metrics,
     plus a `Deployments` React page — see [ADR-0020](DECISIONS/0020-deployment-status-model-and-scheduler.md)
     and [ADR-0021](DECISIONS/0021-deployment-business-metrics.md)
+-   Public aggregate stats endpoint (`GET /api/public/stats`, counts +
+    success rate only, unauthenticated) — see [ADR-0022](DECISIONS/0022-public-aggregate-stats-endpoint.md)
+-   Frontend visual/UX redesign — shadcn/ui design system (Base UI
+    primitives, CSS-variable theming, dark mode), all four existing
+    pages migrated, a new public `LandingPage` (`/`, live stats) and
+    authenticated `DashboardPage` (`/dashboard`, summary + recent
+    deployments with status badges), Vitest + React Testing Library
+    added as the frontend test runner — see [ADR-0023](DECISIONS/0023-frontend-design-system-and-testing.md)
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for day-to-day commands. Next up:
 Kubernetes (see the roadmap in [PROJECT_GUIDE.md](PROJECT_GUIDE.md)).

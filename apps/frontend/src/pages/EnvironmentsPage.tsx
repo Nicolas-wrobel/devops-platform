@@ -1,9 +1,23 @@
+import { Server } from 'lucide-react'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Nav } from '../components/Nav'
+import { Badge } from '../components/ui/badge'
+import { Button } from '../components/ui/button'
+import { Card, CardContent } from '../components/ui/card'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select'
 import { api } from '../lib/api'
 import type { EnvironmentResponse, EnvironmentType } from '../lib/types'
 
 const ENVIRONMENT_TYPES: EnvironmentType[] = ['DEVELOPMENT', 'STAGING', 'PRODUCTION']
+const ENVIRONMENT_TYPE_ITEMS = Object.fromEntries(ENVIRONMENT_TYPES.map((t) => [t, t]))
 
 export function EnvironmentsPage() {
   const [environments, setEnvironments] = useState<EnvironmentResponse[]>([])
@@ -12,6 +26,8 @@ export function EnvironmentsPage() {
   const [description, setDescription] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [search, setSearch] = useState('')
+  const [selectedId, setSelectedId] = useState<number | null>(null)
 
   useEffect(() => {
     let ignore = false
@@ -40,74 +56,105 @@ export function EnvironmentsPage() {
     }
   }
 
+  const filteredEnvironments = environments.filter((env) =>
+    env.name.toLowerCase().includes(search.toLowerCase()),
+  )
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Nav />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-semibold text-gray-900">Environments</h1>
+        <h1 className="mb-6 flex items-center gap-2 text-2xl font-semibold text-foreground">
+          <Server className="size-6" />
+          Environments
+        </h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="mb-8 flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-white p-4"
-        >
-          <div>
-            <label htmlFor="name" className="block text-xs font-medium text-gray-700">Name</label>
-            <input
-              id="name"
-              className="mt-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="type" className="block text-xs font-medium text-gray-700">Type</label>
-            <select
-              id="type"
-              className="mt-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
-              value={type}
-              onChange={(e) => setType(e.target.value as EnvironmentType)}
-            >
-              {ENVIRONMENT_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex-1">
-            <label htmlFor="description" className="block text-xs font-medium text-gray-700">Description</label>
-            <input
-              id="description"
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-          <button
-            type="submit"
-            className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            Add
-          </button>
-        </form>
-
-        {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
-
-        <ul className="divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white">
-          {environments.map((env) => (
-            <li key={env.id} className="flex items-center justify-between px-4 py-3">
+        <Card className="mb-8">
+          <CardContent>
+            <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
               <div>
-                <p className="text-sm font-medium text-gray-900">{env.name}</p>
-                <p className="text-xs text-gray-500">{env.description ?? 'No description'}</p>
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  className="mt-1"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
               </div>
-              <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                {env.type}
-              </span>
+              <div>
+                <Label htmlFor="type">Type</Label>
+                <Select
+                  items={ENVIRONMENT_TYPE_ITEMS}
+                  value={type}
+                  onValueChange={(value) => setType(value as EnvironmentType)}
+                >
+                  <SelectTrigger id="type" className="mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ENVIRONMENT_TYPES.map((t) => (
+                      <SelectItem key={t} value={t}>
+                        {t}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex-1">
+                <Label htmlFor="description">Description</Label>
+                <Input
+                  id="description"
+                  className="mt-1 w-full"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
+              <Button type="submit">Add</Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {error && <p className="mb-4 text-sm text-destructive">{error}</p>}
+
+        <Input
+          type="search"
+          placeholder="Search environments..."
+          className="mb-4"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <ul key={search} className="animate-in fade-in divide-y divide-border rounded-lg border border-border bg-card duration-200">
+          {filteredEnvironments.map((env) => (
+            <li
+              key={env.id}
+              onClick={() => setSelectedId(selectedId === env.id ? null : env.id)}
+              className={
+                selectedId === env.id
+                  ? 'cursor-pointer px-4 py-3 ring-2 ring-inset ring-primary transition-colors'
+                  : 'cursor-pointer px-4 py-3 transition-colors hover:bg-accent/50'
+              }
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{env.name}</p>
+                  <p className="text-xs text-muted-foreground">{env.description ?? 'No description'}</p>
+                </div>
+                <Badge variant="secondary">{env.type}</Badge>
+              </div>
+              {selectedId === env.id && (
+                <div className="animate-in fade-in mt-2 flex gap-4 text-xs text-muted-foreground duration-200">
+                  <span>Created {new Date(env.createdAt).toLocaleString()}</span>
+                  <span>Updated {new Date(env.updatedAt).toLocaleString()}</span>
+                </div>
+              )}
             </li>
           ))}
-          {environments.length === 0 && (
-            <li className="px-4 py-6 text-center text-sm text-gray-500">No environments yet.</li>
+          {filteredEnvironments.length === 0 && (
+            <li className="px-4 py-6 text-center text-sm text-muted-foreground">
+              {environments.length === 0 ? 'No environments yet.' : 'No environments match your search.'}
+            </li>
           )}
         </ul>
       </main>

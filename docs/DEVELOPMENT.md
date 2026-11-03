@@ -73,8 +73,18 @@ files.
 
 **Frontend** (from `apps/frontend/`, outside Docker):
 ```bash
-npm run dev / build / lint / preview
+npm run dev / build / lint / test / preview
 ```
+`npm run test` runs the Vitest suite (`vitest run`, non-watch) — see
+[ADR-0023](DECISIONS/0023-frontend-design-system-and-testing.md).
+
+**Note on the dev container's `node_modules`**: `compose.dev.yml` mounts
+`apps/frontend` into the container but keeps `node_modules` on a separate
+anonymous Docker volume (so the host bind mount doesn't shadow it). That
+volume is **not** renewed by a plain `make dev-build` — after adding a new
+npm dependency, run `./scripts/dc-dev.sh up -d --force-recreate -V frontend`
+to actually pick it up, or the container keeps running against its old,
+now-stale `node_modules`.
 
 ------------------------------------------------------------------------
 
@@ -100,7 +110,7 @@ with:
 1. `make dev` then `make dev-ps` — everything up and healthy (`db`,
    `backend`, `frontend`, `prometheus`, `grafana`).
 2. Backend: `./mvnw test` (once tests exist for the change).
-3. Frontend: `npm run lint` / `npm run build`.
+3. Frontend: `npm run lint` / `npm run test` / `npm run build`.
 4. Confirm `curl http://localhost:8080/actuator/health` returns `200` with
    `"status":"UP"`.
 5. Confirm Prometheus is scraping the backend: open the UI on
