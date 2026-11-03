@@ -1,5 +1,5 @@
 # apps/frontend/Dockerfile.dev
-FROM node:20.20.2
+FROM node:24.22.2
 
 WORKDIR /app
 EXPOSE 5173

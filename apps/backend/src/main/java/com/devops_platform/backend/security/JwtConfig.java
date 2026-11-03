@@ -21,8 +21,21 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 @Configuration
 public class JwtConfig {
 
-    @Value("${JWT_SECRET:dYD+HNOcw8IO16X2/v7yLpVfaWwPLne+SqDV29fdZ+s=}")
-    private String jwtSecret;
+    // HS256 requires a key of at least 256 bits (RFC 7518 §3.2).
+    static final int MIN_SECRET_BYTES = 32;
+
+    private final String jwtSecret;
+
+    public JwtConfig(@Value("${JWT_SECRET}") String jwtSecret) {
+        // Nimbus would only reject a short key when signing — i.e. at the first
+        // login, after the app already passed its healthchecks. Fail at startup.
+        if (jwtSecret.getBytes(StandardCharsets.UTF_8).length < MIN_SECRET_BYTES) {
+            throw new IllegalStateException(
+                    "JWT_SECRET must be at least " + MIN_SECRET_BYTES + " bytes long (HS256). "
+                            + "Generate one with: openssl rand -base64 32");
+        }
+        this.jwtSecret = jwtSecret;
+    }
 
     @Bean
     public JwtEncoder jwtEncoder() {

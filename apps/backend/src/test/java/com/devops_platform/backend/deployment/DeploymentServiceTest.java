@@ -3,6 +3,7 @@ package com.devops_platform.backend.deployment;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @ExtendWith(MockitoExtension.class)
 class DeploymentServiceTest {
@@ -123,6 +125,23 @@ class DeploymentServiceTest {
         assertThatThrownBy(() -> service.start(1L)).isInstanceOf(ConflictException.class);
 
         assertThat(deployment.getStatus()).isEqualTo(DeploymentStatus.PENDING);
+    }
+
+    @Test
+    void start_throwsConflict_whenAConcurrentStartWinsTheRace() {
+        // The fast-path check sees no RUNNING deployment, but another transaction
+        // commits one before our flush — the unique index rejects ours.
+        Deployment deployment = new Deployment(link, "1.0.0", "alice");
+        setId(link, 42L);
+        when(repository.findById(1L)).thenReturn(Optional.of(deployment));
+        when(repository.existsByApplicationEnvironmentIdAndStatus(42L, DeploymentStatus.RUNNING)).thenReturn(false);
+        when(random.nextInt(21)).thenReturn(5);
+        doThrow(new DataIntegrityViolationException("uk_deployment_one_running_per_link"))
+                .when(repository).flush();
+
+        assertThatThrownBy(() -> service.start(1L))
+                .isInstanceOf(DeploymentConflictException.class)
+                .hasMessageContaining("already RUNNING");
     }
 
     @Test

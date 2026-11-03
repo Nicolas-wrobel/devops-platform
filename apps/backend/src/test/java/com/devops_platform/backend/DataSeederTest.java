@@ -11,16 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
-// DataSeeder is disabled under the "test" profile (active for every other
-// test, see pom.xml's surefire config) precisely so it doesn't seed data
-// into every other Testcontainers-based test's empty database. This is
-// the one test that needs it actually enabled, so it opts out of that
-// profile instead.
-@SpringBootTest
+// application-test.properties disables DataSeeder for every test; this is
+// the one test that re-enables it. Inline @SpringBootTest properties take
+// precedence over profile-specific files.
+@SpringBootTest(properties = "app.demo-data.enabled=true")
 @Import(PostgresContainerConfig.class)
-@ActiveProfiles("data-seeder-test")
 class DataSeederTest {
 
     @Autowired
@@ -43,7 +39,7 @@ class DataSeederTest {
         assertThat(environmentRepository.count()).isEqualTo(3);
         assertThat(applicationRepository.count()).isEqualTo(2);
         assertThat(linkRepository.count()).isEqualTo(6);
-        assertThat(deploymentRepository.count()).isEqualTo(8);
+        assertThat(deploymentRepository.count()).isEqualTo(50);
     }
 
     @Test

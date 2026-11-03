@@ -13,9 +13,11 @@ import com.devops_platform.backend.environment.EnvironmentType;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,16 +28,16 @@ import org.springframework.transaction.annotation.Transactional;
  * slate. Deliberately a runtime seeder, not a Flyway migration — Flyway
  * stays schema-only (ADR-0006); see ADR-0024 for the full rationale.
  *
- * Disabled under the "test" profile (activated for every Maven test run
- * via the surefire plugin, see pom.xml) — every Testcontainers-based test
- * starts from a genuinely empty database on purpose (ADR-0009/0010), and
- * this runner would otherwise seed it before any test method runs.
+ * Gated by the app.demo-data.enabled property, off when absent (ADR-0025):
+ * enabled in application.properties, disabled in application-test.properties
+ * so every Testcontainers-based test starts from an empty database
+ * (ADR-0009/0010).
  */
 @Component
-@Profile("!test")
+@ConditionalOnProperty(name = "app.demo-data.enabled", havingValue = "true")
 public class DataSeeder implements ApplicationRunner {
 
-    private static final String TRIGGERED_BY = "admin";
+    private static final List<String> TRIGGERED_BY_OPTIONS = List.of("admin", "ci-bot", "alice", "bob");
 
     private final EnvironmentRepository environmentRepository;
     private final ApplicationRepository applicationRepository;
@@ -82,24 +84,64 @@ public class DataSeeder implements ApplicationRunner {
         ApplicationEnvironment notificationsStaging = linkRepository.save(new ApplicationEnvironment(notifications, staging));
         ApplicationEnvironment notificationsProd = linkRepository.save(new ApplicationEnvironment(notifications, production));
 
-        seedCompleted(checkoutProd, "2.4.1", DeploymentStatus.SUCCESS);
-        seedCompleted(checkoutStaging, "2.5.0-rc1", DeploymentStatus.SUCCESS);
-        seedCompleted(checkoutDev, "2.5.0-dev", DeploymentStatus.SUCCESS);
-        seedCompleted(notificationsProd, "1.8.2", DeploymentStatus.SUCCESS);
-        seedCompleted(notificationsStaging, "1.9.0-rc2", DeploymentStatus.FAILED);
-        seedCompleted(checkoutStaging, "2.5.0-rc2", DeploymentStatus.FAILED);
-        seedCompleted(notificationsDev, "1.9.0-dev", DeploymentStatus.SUCCESS);
+        List<ApplicationEnvironment> links = List.of(
+                checkoutDev, checkoutStaging, checkoutProd,
+                notificationsDev, notificationsStaging, notificationsProd);
 
-        // Left PENDING on purpose, so the "Start" button has something to
-        // demo right away.
-        deploymentRepository.save(new Deployment(checkoutProd, "2.5.0", TRIGGERED_BY));
+        List<DeploymentStatus> statuses = buildDeploymentStatusSequence();
+        for (int i = 0; i < statuses.size(); i++) {
+            ApplicationEnvironment link = links.get(i % links.size());
+            String version = "1." + i + ".0";
+            String triggeredBy = TRIGGERED_BY_OPTIONS.get(i % TRIGGERED_BY_OPTIONS.size());
+            seedDeployment(link, version, triggeredBy, statuses.get(i));
+        }
     }
 
-    private void seedCompleted(ApplicationEnvironment link, String version, DeploymentStatus finalStatus) {
-        Instant now = clock.instant();
-        Deployment deployment = new Deployment(link, version, TRIGGERED_BY);
-        deployment.start(now, Duration.ofSeconds(20));
-        deployment.complete(finalStatus, now.plusSeconds(20));
-        deploymentRepository.save(deployment);
+    /**
+     * 50 deployments: 43 historical/terminal ones at roughly the configured
+     * 85% success rate (36 SUCCESS, 7 FAILED), so the dashboard's
+     * "Deployments by status" chart is well filled instead of near-empty;
+     * plus a handful left non-terminal so the UI has something to demo
+     * right away after a fresh deploy (5 PENDING for the "Start" button,
+     * 2 RUNNING for the live-completion scheduler).
+     */
+    private List<DeploymentStatus> buildDeploymentStatusSequence() {
+        List<DeploymentStatus> statuses = new ArrayList<>();
+        for (int block = 0; block < 7; block++) {
+            statuses.add(DeploymentStatus.SUCCESS);
+            statuses.add(DeploymentStatus.SUCCESS);
+            statuses.add(DeploymentStatus.SUCCESS);
+            statuses.add(DeploymentStatus.SUCCESS);
+            statuses.add(DeploymentStatus.SUCCESS);
+            statuses.add(DeploymentStatus.FAILED);
+        }
+        statuses.add(DeploymentStatus.SUCCESS);
+        for (int i = 0; i < 5; i++) {
+            statuses.add(DeploymentStatus.PENDING);
+        }
+        for (int i = 0; i < 2; i++) {
+            statuses.add(DeploymentStatus.RUNNING);
+        }
+        return statuses;
+    }
+
+    private void seedDeployment(ApplicationEnvironment link, String version, String triggeredBy, DeploymentStatus status) {
+        Deployment deployment = new Deployment(link, version, triggeredBy);
+        switch (status) {
+            case PENDING -> deploymentRepository.save(deployment);
+            case RUNNING -> {
+                // Long simulated duration so it stays visibly RUNNING for a
+                // while after a fresh deploy, instead of the scheduler
+                // completing it within seconds like the terminal ones below.
+                deployment.start(clock.instant(), Duration.ofMinutes(5));
+                deploymentRepository.save(deployment);
+            }
+            case SUCCESS, FAILED -> {
+                Instant now = clock.instant();
+                deployment.start(now, Duration.ofSeconds(20));
+                deployment.complete(status, now.plusSeconds(20));
+                deploymentRepository.save(deployment);
+            }
+        }
     }
 }

@@ -21,10 +21,10 @@ class PrometheusEndpointTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Value("${PROMETHEUS_SCRAPE_USER:prometheus}")
+    @Value("${PROMETHEUS_SCRAPE_USER}")
     private String prometheusUser;
 
-    @Value("${PROMETHEUS_SCRAPE_PASSWORD:prometheuspass}")
+    @Value("${PROMETHEUS_SCRAPE_PASSWORD}")
     private String prometheusPassword;
 
     @Test

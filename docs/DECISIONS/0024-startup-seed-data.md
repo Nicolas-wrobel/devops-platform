@@ -26,9 +26,12 @@ data by default is the point, not an afterthought.
   `environmentRepository.count() == 0` before doing anything (idempotent
   across restarts — a populated database is left untouched), and keeps
   Flyway's job unchanged. Seeds 3 environments, 2 applications, all six
-  application/environment links, and 8 deployments (6 terminal —
-  `SUCCESS`/`FAILED` — plus 1 left `PENDING` so the "Start" button has
-  something to demo immediately).
+  application/environment links, and 50 deployments (43 terminal at
+  roughly the configured 85% success rate — 36 `SUCCESS`, 7 `FAILED` —
+  so the dashboard's status chart is well filled, plus 5 left `PENDING`
+  for the "Start" button and 2 `RUNNING` with a 5-minute simulated
+  duration so the completion scheduler has something to demo
+  immediately).
 - **Backdating seeded timestamps for a "lived-in" look (considered,
   dropped)** — `Environment`/`Application`/`Deployment.createdAt` are all
   `@CreationTimestamp`-managed with no setter; Hibernate stamps real wall-
@@ -71,3 +74,9 @@ plus `Clock`, and is active everywhere except the `test` profile.
   (different sample apps, more variety), existing deployed databases
   that were seeded under the old shape won't be updated — this seeder
   only ever acts on a genuinely empty database, by design.
+
+## Amendment (2026-11-03)
+The `@Profile("!test")` gating described above was replaced by
+`@ConditionalOnProperty(name = "app.demo-data.enabled", havingValue =
+"true")` — see [ADR-0025](0025-fail-fast-secrets-and-property-gated-seeder.md).
+The rest of this decision (runtime seeder, empty-database check) stands.
