@@ -74,3 +74,9 @@ plus `Clock`, and is active everywhere except the `test` profile.
   (different sample apps, more variety), existing deployed databases
   that were seeded under the old shape won't be updated — this seeder
   only ever acts on a genuinely empty database, by design.
+
+## Amendment (2026-11-03)
+The `@Profile("!test")` gating described above was replaced by
+`@ConditionalOnProperty(name = "app.demo-data.enabled", havingValue =
+"true")` — see [ADR-0025](0025-fail-fast-secrets-and-property-gated-seeder.md).
+The rest of this decision (runtime seeder, empty-database check) stands.

@@ -56,11 +56,14 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      PASSWORD_ENCODER_ID: ${PASSWORD_ENCODER_ID}
-      APP_ADMIN_USER: ${APP_ADMIN_USER}
-      APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD}
-      PROMETHEUS_SCRAPE_USER: ${PROMETHEUS_SCRAPE_USER}
-      PROMETHEUS_SCRAPE_PASSWORD: ${PROMETHEUS_SCRAPE_PASSWORD}
+      # ":?" makes compose refuse to start when a value is unset OR empty —
+      # an empty credential/secret would otherwise fail silently later.
+      PASSWORD_ENCODER_ID: ${PASSWORD_ENCODER_ID:?set it in infra/docker/.env.<env>, see .env.example}
+      APP_ADMIN_USER: ${APP_ADMIN_USER:?set it in infra/docker/.env.<env>, see .env.example}
+      APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD:?set it in infra/docker/.env.<env>, see .env.example}
+      PROMETHEUS_SCRAPE_USER: ${PROMETHEUS_SCRAPE_USER:?set it in infra/docker/.env.<env>, see .env.example}
+      PROMETHEUS_SCRAPE_PASSWORD: ${PROMETHEUS_SCRAPE_PASSWORD:?set it in infra/docker/.env.<env>, see .env.example}
+      JWT_SECRET: ${JWT_SECRET:?set it in infra/docker/.env.<env> (at least 32 characters), see .env.example}
     depends_on:
       db:
         condition: service_healthy

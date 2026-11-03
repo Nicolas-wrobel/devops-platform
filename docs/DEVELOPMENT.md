@@ -48,8 +48,13 @@ for the auth model these credentials plug into). Gitignored, same as the
 ./mvnw test -Dtest=BackendApplicationTests   # single test class
 ./mvnw package
 ```
-`./mvnw spring-boot:run` needs `SPRING_DATASOURCE_URL/_USERNAME/_PASSWORD` and a
-reachable Postgres (defaults target `localhost:5432`). `./mvnw test` does **not**
+`./mvnw spring-boot:run` needs `SPRING_DATASOURCE_URL/_USERNAME/_PASSWORD`, a
+reachable Postgres (defaults target `localhost:5432`), and the security
+settings exported — `JWT_SECRET` (≥ 32 characters), `PASSWORD_ENCODER_ID`,
+`APP_ADMIN_USER/_PASSWORD`, `PROMETHEUS_SCRAPE_USER/_PASSWORD`. They have no
+defaults on purpose: the backend refuses to start without them (see
+[ADR-0025](DECISIONS/0025-fail-fast-secrets-and-property-gated-seeder.md)).
+`./mvnw test` does **not**
 need any of that — every test that touches a database spins up its own disposable
 `postgres:16` container via Testcontainers (see
 [ADR-0009](DECISIONS/0009-testcontainers-for-persistence-tests.md) and

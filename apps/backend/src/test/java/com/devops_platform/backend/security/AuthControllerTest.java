@@ -27,10 +27,10 @@ class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Value("${APP_ADMIN_USER:admin}")
+    @Value("${APP_ADMIN_USER}")
     private String adminUser;
 
-    @Value("${APP_ADMIN_PASSWORD:adminpass}")
+    @Value("${APP_ADMIN_PASSWORD}")
     private String adminPassword;
 
     @Test

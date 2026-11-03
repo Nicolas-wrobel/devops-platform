@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
  * slate. Deliberately a runtime seeder, not a Flyway migration — Flyway
  * stays schema-only (ADR-0006); see ADR-0024 for the full rationale.
  *
- * Disabled under the "test" profile (activated for every Maven test run
- * via the surefire plugin, see pom.xml) — every Testcontainers-based test
- * starts from a genuinely empty database on purpose (ADR-0009/0010), and
- * this runner would otherwise seed it before any test method runs.
+ * Gated by the app.demo-data.enabled property, off when absent (ADR-0025):
+ * enabled in application.properties, disabled in application-test.properties
+ * so every Testcontainers-based test starts from an empty database
+ * (ADR-0009/0010).
  */
 @Component
-@Profile("!test")
+@ConditionalOnProperty(name = "app.demo-data.enabled", havingValue = "true")
 public class DataSeeder implements ApplicationRunner {
 
     private static final List<String> TRIGGERED_BY_OPTIONS = List.of("admin", "ci-bot", "alice", "bob");

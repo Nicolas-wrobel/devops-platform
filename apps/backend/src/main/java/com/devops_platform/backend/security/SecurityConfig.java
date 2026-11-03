@@ -35,19 +35,19 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${PASSWORD_ENCODER_ID:bcrypt}")
+    @Value("${PASSWORD_ENCODER_ID}")
     private String encoderId;
 
-    @Value("${APP_ADMIN_USER:admin}")
+    @Value("${APP_ADMIN_USER}")
     private String adminUser;
 
-    @Value("${APP_ADMIN_PASSWORD:adminpass}")
+    @Value("${APP_ADMIN_PASSWORD}")
     private String adminPassword;
 
-    @Value("${PROMETHEUS_SCRAPE_USER:prometheus}")
+    @Value("${PROMETHEUS_SCRAPE_USER}")
     private String prometheusUser;
 
-    @Value("${PROMETHEUS_SCRAPE_PASSWORD:prometheuspass}")
+    @Value("${PROMETHEUS_SCRAPE_PASSWORD}")
     private String prometheusPassword;
 
     @Bean
