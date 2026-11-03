@@ -1,8 +1,6 @@
 services:
-  db:
-    ports:
-      - "${POSTGRES_PORT}:5432"
-
+  # db deliberately has no host port mapping in prod: only the backend
+  # reaches it, over the compose network.
   prometheus:
     ports:
       - "${PROMETHEUS_PORT}:9090"

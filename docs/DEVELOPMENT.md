@@ -25,7 +25,7 @@ make prod-down / prod-logs / prod-ps / prod-build / prod-restart
 ```
 
 Local URLs: frontend `:5173` (dev) / `:80` (prod), backend `:8080`,
-Postgres `:5432`.
+Postgres `:5432` (dev only — not exposed on the host in prod).
 
 Env vars live in `infra/docker/.env.dev` / `.env.prod` — copy
 `infra/docker/.env.example` to get started (see

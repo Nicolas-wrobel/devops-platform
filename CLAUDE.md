@@ -41,7 +41,7 @@ make prod
 make prod-down / prod-logs / prod-ps / prod-build / prod-restart
 ```
 
-Local URLs: frontend `:5173` (dev) / `:80` (prod), backend `:8080`, Postgres `:5432`.
+Local URLs: frontend `:5173` (dev) / `:80` (prod), backend `:8080`, Postgres `:5432` (dev only — not exposed on the host in prod).
 
 Env vars live in `infra/docker/.env.dev` / `.env.prod` (see `.env.example` for keys: `POSTGRES_USER/PASSWORD/DB/PORT`, `SPRING_BOOT_PORT`, `REACT_PORT`). Gitignored except `.env.example` — see [Conventions](#conventions).
 

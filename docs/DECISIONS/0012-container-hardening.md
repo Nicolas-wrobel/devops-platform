@@ -122,3 +122,10 @@ proportion to a portfolio project at this stage.
   write time and should be treated as a starting point, not a
   permanent fact — worth a periodic manual bump rather than assuming
   they stay current indefinitely.
+
+## Amendment (2026-11-03)
+`nginx:alpine` is now tag-pinned too (`nginx:1.30.6-alpine`, current
+stable branch), and the Node images were bumped `node:20.20.2` →
+`node:24.22.2` (Node 20 reached end-of-life in April 2026; 24 is the
+active LTS). Leaving one image floating undermined the reproducibility
+goal above for no real benefit. SHA256 digest pinning remains deferred.

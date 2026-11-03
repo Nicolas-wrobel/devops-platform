@@ -122,15 +122,17 @@ Three Compose files, layered (rationale in
   - `backend` builds from the multi-stage `Dockerfile` (Maven build stage →
     `eclipse-temurin:21-jre` runtime stage, packaged jar).
   - `frontend` builds from the multi-stage `Dockerfile` (Node build stage →
-    static files served by `nginx:alpine`).
+    static files served by `nginx:1.30.6-alpine`).
   - No bind mounts — containers run what was actually built into the image.
+  - `db` has no host port mapping — only reachable by `backend` over the
+    compose network (dev keeps `${POSTGRES_PORT}` exposed for local tooling).
   - `prometheus` exposes the same `${PROMETHEUS_PORT}` as dev — no dev/prod
     behavioral split for this service.
   - `grafana` exposes the same `${GRAFANA_PORT}` as dev — no dev/prod
     behavioral split for this service either.
 
 Local URLs: frontend `:5173` (dev) / `:80` (prod), backend `:8080`,
-Postgres `:5432`, Prometheus UI `:9090`, Grafana UI `:3000` (container
+Postgres `:5432` (dev only), Prometheus UI `:9090`, Grafana UI `:3000` (container
 port — actual host port set by `${GRAFANA_PORT}`).
 
 ------------------------------------------------------------------------
