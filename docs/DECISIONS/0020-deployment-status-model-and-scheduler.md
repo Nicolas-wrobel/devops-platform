@@ -85,3 +85,9 @@ statically.
   `PUT`/`DELETE` on this entity" staying true going forward.
 - Closes the state-model/scheduling half of roadmap step 9. The
   Micrometer instrumentation half is covered separately in ADR-0021.
+
+## Amendment (2026-11-03)
+The race window on the single-`RUNNING`-per-link rule described above is
+closed: a partial unique index now enforces it in the database, with the
+service-layer check kept as a fast path — see
+[ADR-0026](0026-database-enforced-single-running-deployment.md).

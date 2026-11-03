@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +68,14 @@ public class DeploymentService {
         }
         Duration simulatedDuration = Duration.ofSeconds(randomDurationSeconds());
         deployment.start(clock.instant(), simulatedDuration);
+        // The check above is a fast path only: two concurrent requests can both
+        // pass it. uk_deployment_one_running_per_link is the real guarantee —
+        // flush now so its violation surfaces here, not at commit time.
+        try {
+            repository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw DeploymentConflictException.anotherDeploymentRunning(linkId);
+        }
         return mapper.toResponse(deployment);
     }
 

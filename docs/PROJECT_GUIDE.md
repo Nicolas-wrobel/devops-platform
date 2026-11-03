@@ -131,8 +131,10 @@ or entirely new steps for modules/variables not yet anticipated).
         state machine; history is the `Deployment` rows themselves,
         filterable by application/environment; see [ADR-0020](DECISIONS/0020-deployment-status-model-and-scheduler.md))
     -   Business validations — done (only one `RUNNING` deployment per
-        application/environment link at a time, enforced in
-        `DeploymentService`, see [ADR-0020](DECISIONS/0020-deployment-status-model-and-scheduler.md))
+        application/environment link at a time, enforced by a partial
+        unique index in PostgreSQL with a fast-path check in
+        `DeploymentService`, see [ADR-0020](DECISIONS/0020-deployment-status-model-and-scheduler.md)
+        and [ADR-0026](DECISIONS/0026-database-enforced-single-running-deployment.md))
     -   Business metrics — done (Micrometer `Gauge`/`Counter`/`Timer` on
         deployment status/completions/duration, three new Grafana panels,
         see [ADR-0021](DECISIONS/0021-deployment-business-metrics.md))
