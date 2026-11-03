@@ -43,7 +43,7 @@ class DataSeederTest {
         assertThat(environmentRepository.count()).isEqualTo(3);
         assertThat(applicationRepository.count()).isEqualTo(2);
         assertThat(linkRepository.count()).isEqualTo(6);
-        assertThat(deploymentRepository.count()).isEqualTo(8);
+        assertThat(deploymentRepository.count()).isEqualTo(50);
     }
 
     @Test
