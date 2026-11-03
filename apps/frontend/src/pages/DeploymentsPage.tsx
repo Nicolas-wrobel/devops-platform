@@ -2,6 +2,7 @@ import { Rocket } from 'lucide-react'
 import { useEffect, useState, type FormEvent } from 'react'
 import { DeploymentStatusBadge } from '../components/DeploymentStatusBadge'
 import { Nav } from '../components/Nav'
+import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
 import { Input } from '../components/ui/input'
@@ -27,6 +28,7 @@ export function DeploymentsPage() {
   const [refreshKey, setRefreshKey] = useState(0)
   const [search, setSearch] = useState('')
   const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [filterApplicationIds, setFilterApplicationIds] = useState<Set<number>>(new Set())
 
   useEffect(() => {
     let ignore = false
@@ -85,9 +87,23 @@ export function DeploymentsPage() {
     }
   }
 
+  function toggleFilterApplication(id: number) {
+    setFilterApplicationIds((current) => {
+      const next = new Set(current)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
+    })
+  }
+
   const filteredDeployments = deployments.filter((d) => {
     const haystack = `${d.applicationName} ${d.environmentName} ${d.version}`.toLowerCase()
-    return haystack.includes(search.toLowerCase())
+    const matchesSearch = haystack.includes(search.toLowerCase())
+    const matchesApplicationFilter = filterApplicationIds.size === 0 || filterApplicationIds.has(d.applicationId)
+    return matchesSearch && matchesApplicationFilter
   })
 
   return (
@@ -170,7 +186,32 @@ export function DeploymentsPage() {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <ul key={search} className="animate-in fade-in divide-y divide-border rounded-lg border border-border bg-card duration-200">
+        {applications.length > 0 && (
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <span className="text-xs text-muted-foreground">Filter by application:</span>
+            {applications.map((app) => (
+              <Badge
+                key={app.id}
+                variant={filterApplicationIds.has(app.id) ? 'default' : 'outline'}
+                className="cursor-pointer select-none transition-colors"
+                onClick={() => toggleFilterApplication(app.id)}
+              >
+                {app.name}
+              </Badge>
+            ))}
+            {filterApplicationIds.size > 0 && (
+              <button
+                type="button"
+                onClick={() => setFilterApplicationIds(new Set())}
+                className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        )}
+
+        <ul key={`${search}-${[...filterApplicationIds].join(',')}`} className="animate-in fade-in divide-y divide-border rounded-lg border border-border bg-card duration-200">
           {filteredDeployments.map((deployment) => (
             <li
               key={deployment.id}
@@ -217,7 +258,7 @@ export function DeploymentsPage() {
           ))}
           {filteredDeployments.length === 0 && (
             <li className="px-4 py-6 text-center text-sm text-muted-foreground">
-              {deployments.length === 0 ? 'No deployments yet.' : 'No deployments match your search.'}
+              {deployments.length === 0 ? 'No deployments yet.' : 'No deployments match your filters.'}
             </li>
           )}
         </ul>
