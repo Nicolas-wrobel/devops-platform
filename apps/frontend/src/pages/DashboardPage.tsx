@@ -1,6 +1,7 @@
 import { LayoutDashboard } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { AboutProject } from '../components/AboutProject'
 import { DeploymentStatusBadge } from '../components/DeploymentStatusBadge'
 import { DeploymentStatusChart } from '../components/DeploymentStatusChart'
 import { Nav } from '../components/Nav'
@@ -89,6 +90,8 @@ export function DashboardPage() {
             <li className="px-4 py-6 text-center text-sm text-muted-foreground">No deployments yet.</li>
           )}
         </ul>
+
+        <AboutProject />
       </main>
     </div>
   )
