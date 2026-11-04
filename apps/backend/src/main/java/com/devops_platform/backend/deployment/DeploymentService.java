@@ -79,6 +79,9 @@ public class DeploymentService {
         return mapper.toResponse(deployment);
     }
 
+    // Must stay in one transaction (class-level @Transactional): the rows are
+    // locked by the SELECT below and the locks are released at commit — moving
+    // the loop out of this transaction would let another replica re-claim them.
     public void completeDueDeployments() {
         List<Deployment> due = repository.findByStatusAndPlannedFinishAtBefore(DeploymentStatus.RUNNING, clock.instant());
         for (Deployment deployment : due) {

@@ -1,6 +1,7 @@
 package com.devops_platform.backend.deployment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.devops_platform.backend.application.Application;
@@ -25,15 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * Reproduces the check-then-act race on "one RUNNING deployment per link"
- * deterministically: transaction 1 starts deployment A without committing,
- * then transaction 2 starts deployment B on the same link — its existence
- * check can't see A (READ_COMMITTED), so only uk_deployment_one_running_per_link
- * can stop it. Not @Transactional: both transactions must really commit.
+ * Deterministic multi-replica scenarios against real PostgreSQL, each
+ * replica played by its own transaction/thread (ADR-0026, ADR-0027).
+ * Not @Transactional: the transactions must really commit or roll back.
  */
 @SpringBootTest
 @Import(PostgresContainerConfig.class)
@@ -61,6 +61,11 @@ class DeploymentConcurrencyTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    // The real scheduler ticks every 10s and could complete the test's due
+    // deployment at any moment; the tests play the replicas themselves.
+    @MockitoBean
+    private DeploymentCompletionScheduler scheduler;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -104,6 +109,38 @@ class DeploymentConcurrencyTest {
                 .isEqualTo(DeploymentStatus.RUNNING);
         assertThat(deploymentRepository.findById(deploymentB).orElseThrow().getStatus())
                 .isEqualTo(DeploymentStatus.PENDING);
+    }
+
+    @Test
+    void completionJob_skipsRowsClaimedByAnotherReplica_andRecoversThemWhenThatReplicaDies() {
+        Deployment due = deploymentRepository.findById(deploymentA).orElseThrow();
+        due.start(Instant.now().minusSeconds(60), Duration.ofSeconds(10));
+        deploymentRepository.save(due);
+
+        // "Replica 1" claims the due row, then dies mid-job (rollback).
+        new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
+            assertThat(deploymentRepository.findByStatusAndPlannedFinishAtBefore(
+                    DeploymentStatus.RUNNING, Instant.now())).hasSize(1);
+
+            // "Replica 2" ticks meanwhile: it must neither wait behind the lock
+            // (plain FOR UPDATE) nor process the row (no lock at all).
+            Future<?> replica2 = executor.submit(() -> service.completeDueDeployments());
+            assertThatCode(() -> replica2.get(5, TimeUnit.SECONDS))
+                    .as("replica 2 must skip the locked row, not wait for it")
+                    .doesNotThrowAnyException();
+
+            status.setRollbackOnly();
+        });
+
+        assertThat(deploymentRepository.findById(deploymentA).orElseThrow().getStatus())
+                .as("skipped by replica 2, untouched by replica 1's rollback")
+                .isEqualTo(DeploymentStatus.RUNNING);
+
+        // The rollback released the lock: the next tick picks the row up.
+        service.completeDueDeployments();
+
+        assertThat(deploymentRepository.findById(deploymentA).orElseThrow().getStatus())
+                .isIn(DeploymentStatus.SUCCESS, DeploymentStatus.FAILED);
     }
 
     private void awaitATransactionBlockedOnALock() {
