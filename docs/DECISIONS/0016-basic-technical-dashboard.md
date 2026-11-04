@@ -90,3 +90,9 @@ Five panels, all querying the existing Prometheus data source:
   this dashboard proves useful, but out of scope for "basic".
 - Closes roadmap step 6 (observability foundation). Next roadmap step is
   the security foundation.
+
+## Amendment (2026-11-04)
+The dashboard is now provisioned from `infra/grafana/dashboards/basic-technical.json`
+(moved, converted from the v2 to the classic schema, data source
+referenced by the fixed UID `prometheus`) — see
+[ADR-0028](0028-grafana-provisioning-as-code.md).

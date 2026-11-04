@@ -107,3 +107,8 @@ Grafana instance to exist first.
   PromQL-backed panels is left as hands-on exploration), any
   provisioning-as-code for data sources/dashboards, and any Grafana
   alerting.
+
+## Amendment (2026-11-04)
+The Prometheus data source is now provisioned from the repo with a fixed
+UID instead of being added through the UI — see
+[ADR-0028](0028-grafana-provisioning-as-code.md).
