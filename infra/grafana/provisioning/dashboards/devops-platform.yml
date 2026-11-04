@@ -1,0 +1,15 @@
+# Tells Grafana where to load dashboard JSON files from (see ADR-0028).
+apiVersion: 1
+
+providers:
+  - name: devops-platform
+    type: file
+    folder: DevOps Platform
+    # Git is the source of truth: the UI refuses to save provisioned
+    # dashboards. To change one, edit it in the UI, export the JSON, and
+    # commit it to infra/grafana/dashboards/.
+    allowUiUpdates: false
+    disableDeletion: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/dashboards

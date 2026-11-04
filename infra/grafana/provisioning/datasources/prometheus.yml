@@ -1,0 +1,16 @@
+# Loaded by Grafana at startup from /etc/grafana/provisioning/datasources
+# (see ADR-0028). Source of truth is this file, not the Grafana UI.
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    # Fixed UID: dashboards reference their data source by UID. A UI-created
+    # data source gets a random one, which breaks every panel on another machine.
+    uid: prometheus
+    # "proxy": the Grafana server queries Prometheus over the compose network,
+    # not the user's browser — hence the service name, not localhost.
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false

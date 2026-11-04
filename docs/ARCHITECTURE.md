@@ -168,11 +168,14 @@ Completed:
     Prometheus service scraping it, both wired into the Compose stack — see
     [ADR-0013](DECISIONS/0013-prometheus-metrics-scraping.md)
 -   Grafana wired into the Compose stack, connected to Prometheus as a
-    data source (added manually through the UI) — see
+    data source — see
     [ADR-0015](DECISIONS/0015-grafana-for-metrics-visualization.md)
--   Basic technical dashboard (RED + USE) built by hand in Grafana,
-    backed up to `infra/grafana/basic-technical.json` — see
+-   Basic technical dashboard (RED + USE) — see
     [ADR-0016](DECISIONS/0016-basic-technical-dashboard.md)
+-   Grafana provisioned as code: data source (fixed UID `prometheus`) and
+    dashboards loaded at startup from `infra/grafana/provisioning/` and
+    `infra/grafana/dashboards/`, read-only, UI saves disabled — see
+    [ADR-0028](DECISIONS/0028-grafana-provisioning-as-code.md)
 -   Security foundation — JWT authentication (OAuth2 Resource Server),
     role-based authorization, CORS/security headers, CI dependency/
     secret/container scanning — see [ADRs 0017-0019](DECISIONS/)
